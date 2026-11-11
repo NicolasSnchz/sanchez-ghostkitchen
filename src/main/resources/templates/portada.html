@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos/base :: cabeza('Cocinas fantasma de Cúcuta')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: deshacer}"></div>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+<div class="envoltura avisos" th:if="${param.salida != null}" role="status">
+  <div class="aviso aviso--exito"><p>Cerraste sesión. Vuelve cuando quieras seguir cazando.</p></div>
+</div>
+
+<main id="contenido">
+  <section class="envoltura portada" aria-labelledby="titulo-portada">
+    <div>
+      <h1 id="titulo-portada">Las mejores cocinas de Cúcuta no tienen letrero.</h1>
+      <p class="portada__texto">
+        Funcionan en garajes, apartamentos y patios de barrio, y solo venden por domicilio.
+        Encuéntralas en el mapa, cázalas mientras están abiertas y suma puntos por cada hallazgo.
+      </p>
+      <div class="portada__acciones">
+        <a class="boton boton--grande" th:href="@{/explorar}">Explorar el mapa</a>
+        <a class="boton boton--grande boton--secundario" th:href="@{/registro}"
+           sec:authorize="!isAuthenticated()">Crear cuenta de cazador</a>
+        <a class="boton boton--grande boton--secundario" th:href="@{/perfil}"
+           sec:authorize="hasRole('CAZADOR')">Ver mi panel</a>
+      </div>
+      <p class="portada__dato">
+        <strong th:text="${resumen.cocinasActivas()}">16</strong>
+        <span th:text="${resumen.cocinasActivas() == 1} ? 'cocina activa' : 'cocinas activas'">cocinas activas</span>
+        en <strong th:text="${resumen.barrios()}">14</strong>
+        <span th:text="${resumen.barrios() == 1} ? 'barrio.' : 'barrios.'">barrios.</span>
+        <strong th:text="${resumen.abiertasAhora()}">9</strong>
+        <span th:text="${resumen.abiertasAhora() == 1} ? 'está abierta en este momento.' : 'están abiertas en este momento.'">están abiertas en este momento.</span>
+      </p>
+    </div>
+
+    <div class="riel" aria-labelledby="titulo-riel">
+      <h2 class="riel__titulo" id="titulo-riel">Cazas recientes</h2>
+      <ul class="riel__comandas" th:if="${!#lists.isEmpty(resumen.cazasRecientes())}">
+        <li th:each="caza : ${resumen.cazasRecientes()}">
+          <article class="comanda">
+            <div class="comanda__encabezado">
+              <time th:datetime="${caza.fechaHora()}" th:text="${#temporals.format(caza.fechaHora(), 'd MMM, h:mm a')}">10 nov., 9:15 p. m.</time>
+            </div>
+            <a class="comanda__cocina" th:href="@{/cocinas/{id}(id=${caza.cocinaId()})}" th:text="${caza.nombreCocina()}">Pizza a Ciegas</a>
+            <div th:text="#{${'categoria.' + caza.categoria()}} + ', ' + ${caza.barrio()}">Pizza, La Riviera</div>
+            <div th:text="'Por ' + ${caza.alias()}">Por lula_bites</div>
+            <div class="comanda__total"><span>Puntos</span><span th:text="'+' + ${caza.puntos()}">+150</span></div>
+            <span class="sello" aria-hidden="true">CAZADA</span>
+          </article>
+        </li>
+      </ul>
+      <p class="riel__vacio" th:if="${#lists.isEmpty(resumen.cazasRecientes())}">
+        Todavía no hay cazas. La primera comanda puede ser la tuya.
+      </p>
+    </div>
+  </section>
+
+  <section class="seccion seccion--borde" aria-labelledby="titulo-juego">
+    <div class="envoltura">
+      <h2 id="titulo-juego">Cómo se juega</h2>
+      <p class="entradilla">Tres pasos, siempre en el mismo orden. Si te equivocas, tienes 15 minutos para deshacer tu última acción.</p>
+      <ol class="pasos">
+        <li>
+          <h3>Busca</h3>
+          <p>Filtra por categoría, por horario o por cercanía, y mira en el mapa dónde está cada cocina.</p>
+        </li>
+        <li>
+          <h3>Caza</h3>
+          <p>Pide a la cocina y márcala como cazada mientras está abierta. Ganas puntos según su rareza y bonos por ser el primero, por mantener la racha o por cazar de noche.</p>
+        </li>
+        <li>
+          <h3>Reseña</h3>
+          <p>Cuenta qué tal estuvo para orientar a los demás cazadores. Cada reseña suma 20 puntos más.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="seccion seccion--borde" aria-labelledby="titulo-destacadas" th:if="${!#lists.isEmpty(resumen.destacadas())}">
+    <div class="envoltura">
+      <h2 id="titulo-destacadas">Las más cazadas</h2>
+      <ul class="destacadas">
+        <li th:each="ficha : ${resumen.destacadas()}">
+          <article class="destacada">
+            <span class="rareza" th:classappend="'rareza--' + ${#strings.toLowerCase(ficha.rareza())}"
+                  th:text="#{${'rareza.' + ficha.rareza()}}">Rara</span>
+            <h3><a th:href="@{/cocinas/{id}(id=${ficha.id()})}" th:text="${ficha.nombre()}">Garbanzo Nocturno</a></h3>
+            <p th:text="#{${'categoria.' + ficha.categoria()}} + ', ' + ${ficha.barrio()}">Típica, El Contento</p>
+            <p class="destacada__veces">
+              <span th:text="${ficha.vecesCazada()} + (${ficha.vecesCazada() == 1} ? ' caza' : ' cazas')">5 cazas</span>
+              <th:block th:if="${ficha.tieneResenas()}">
+                y <span th:text="${#numbers.formatDecimal(ficha.calificacionPromedio(), 1, 1)}">4,5</span> de 5 en reseñas
+              </th:block>
+            </p>
+          </article>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="seccion seccion--borde" aria-labelledby="titulo-puntos">
+    <div class="envoltura columnas">
+      <div>
+        <h2 id="titulo-puntos">Así se cuentan los puntos</h2>
+        <p class="entradilla">
+          Cada caza imprime su propia comanda con el desglose. Los bonos se aplican en orden, y la hora fantasma
+          multiplica todo lo acumulado.
+        </p>
+        <p class="entradilla">
+          Con los puntos subes de nivel: Novato, Explorador desde 300, Rastreador desde 800, Cazador élite desde
+          1.600 y Leyenda desde 3.000.
+        </p>
+      </div>
+      <article class="comanda recibo" aria-label="Tabla de puntos">
+        <div class="comanda__encabezado"><span>Tabla de puntos</span><span>GhostKitchen</span></div>
+        <div class="comanda__linea"><span>Cocina común</span><span>100</span></div>
+        <div class="comanda__linea"><span>Cocina rara</span><span>150</span></div>
+        <div class="comanda__linea"><span>Cocina legendaria</span><span>250</span></div>
+        <div class="comanda__encabezado comanda__encabezado--seccion"><span>Bonos</span></div>
+        <div class="comanda__linea"><span>Primer cazador de la cocina</span><span>+50</span></div>
+        <div class="comanda__linea"><span>Racha, por día seguido (máx. 5)</span><span>+10</span></div>
+        <div class="comanda__linea"><span>Hora fantasma, 10&nbsp;p.&nbsp;m. a 4&nbsp;a.&nbsp;m.</span><span>x1,5</span></div>
+        <div class="comanda__linea"><span>Reseña publicada</span><span>+20</span></div>
+        <div class="comanda__total"><span>Cazas por día</span><span>hasta 5</span></div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

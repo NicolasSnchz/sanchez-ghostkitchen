@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabeza('Ranking')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: deshacer}"></div>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+
+<main id="contenido" class="envoltura">
+  <div class="cabecera-pagina">
+    <h1>Ranking de cazadores</h1>
+    <p>Suma de los puntos de cada caza, reseña y reto completado. Con el mismo puntaje, gana quien tenga más cazas.</p>
+  </div>
+
+  <div class="tabla-contenedor" th:if="${!#lists.isEmpty(posiciones)}">
+    <table class="ranking">
+      <caption>Solo aparecen cazadores con al menos un punto. Los puntos se recalculan si alguien deshace una acción.</caption>
+      <thead>
+        <tr>
+          <th scope="col">Puesto</th>
+          <th scope="col">Cazador</th>
+          <th scope="col" class="ocultar-movil">Nivel</th>
+          <th scope="col" class="numero ocultar-movil">Cazas</th>
+          <th scope="col" class="numero ocultar-movil">Reseñas</th>
+          <th scope="col" class="numero">Puntos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="fila : ${posiciones}" th:classappend="${fila.cazadorId() == miId} ? 'soy-yo'">
+          <td class="posicion" th:text="${fila.posicion()}">1</td>
+          <th scope="row">
+            <th:block th:text="${fila.alias()}">humo_azul</th:block>
+            <span class="etiqueta" th:if="${fila.cazadorId() == miId}">Tú</span>
+          </th>
+          <td class="ocultar-movil" th:text="#{${'nivel.' + fila.nivel()}}">Rastreador</td>
+          <td class="numero ocultar-movil" th:text="${fila.cazas()}">11</td>
+          <td class="numero ocultar-movil" th:text="${fila.resenas()}">5</td>
+          <td class="numero puntos" th:text="${#numbers.formatInteger(fila.puntos(), 1, 'POINT')}">1.520</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sin-resultados" th:if="${#lists.isEmpty(posiciones)}">
+    <p>Todavía nadie tiene puntos. La primera caza abre la tabla.</p>
+    <a class="boton" th:href="@{/explorar}">Ir a cazar</a>
+  </div>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

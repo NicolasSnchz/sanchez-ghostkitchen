@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabeza('Ingresar')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+
+<main id="contenido" class="envoltura cuenta">
+  <section class="panel" aria-labelledby="titulo-ingresar">
+    <h1 id="titulo-ingresar">Ingresar</h1>
+    <div class="avisos" role="status" th:if="${param.error != null or param.registrado != null}">
+      <div class="aviso aviso--error" th:if="${param.error != null}" role="alert">
+        <p>El correo o la clave no coinciden. Revisa e intenta de nuevo.</p>
+      </div>
+      <div class="aviso aviso--exito" th:if="${param.registrado != null}">
+        <p>Tu cuenta de cazador quedó creada. Ingresa con tu correo y tu clave.</p>
+      </div>
+    </div>
+    <form class="formulario" th:action="@{/ingresar}" method="post" data-ingreso>
+      <div class="campo">
+        <label for="correo">Correo</label>
+        <input type="email" id="correo" name="correo" autocomplete="username" required maxlength="120"
+               th:value="${correoRegistrado}" autofocus>
+      </div>
+      <div class="campo">
+        <label for="clave">Clave</label>
+        <input type="password" id="clave" name="clave" autocomplete="current-password" required maxlength="72">
+      </div>
+      <div class="formulario__acciones">
+        <button type="submit" class="boton boton--grande">Ingresar</button>
+        <span>¿No tienes cuenta? <a th:href="@{/registro}">Crea una de cazador</a></span>
+      </div>
+    </form>
+  </section>
+
+  <section class="cuentas-demo" aria-labelledby="titulo-demo">
+    <h2 id="titulo-demo">Cuentas de demostración</h2>
+    <p class="entradilla">El catálogo trae datos de ejemplo para probar todo sin registrarse.</p>
+    <article class="comanda">
+      <div class="comanda__encabezado"><span>Cazador</span><span>Rol CAZADOR</span></div>
+      <dl>
+        <dt>Correo</dt><dd>cazador@ghostkitchen.co</dd>
+        <dt>Clave</dt><dd>Cazador2026</dd>
+      </dl>
+      <p>Lleva una racha de dos días y le falta una cocina para completar un reto.</p>
+      <button type="button" class="boton boton--chico" hidden
+              data-usar-cuenta data-correo="cazador@ghostkitchen.co" data-clave="Cazador2026">Usar esta cuenta</button>
+    </article>
+    <article class="comanda">
+      <div class="comanda__encabezado"><span>Administración</span><span>Rol ADMIN</span></div>
+      <dl>
+        <dt>Correo</dt><dd>admin@ghostkitchen.co</dd>
+        <dt>Clave</dt><dd>Admin2026</dd>
+      </dl>
+      <p>Gestiona el catálogo de cocinas y los retos.</p>
+      <button type="button" class="boton boton--chico" hidden
+              data-usar-cuenta data-correo="admin@ghostkitchen.co" data-clave="Admin2026">Usar esta cuenta</button>
+    </article>
+  </section>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

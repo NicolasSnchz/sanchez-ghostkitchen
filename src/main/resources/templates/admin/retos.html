@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabeza('Retos')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+
+<main id="contenido" class="envoltura">
+  <div class="cabecera-pagina">
+    <h1>Retos</h1>
+    <p>Un reto con inscritos no se elimina: se perderían recompensas que los cazadores ya ganaron.</p>
+  </div>
+
+  <div class="columnas">
+    <div class="tabla-contenedor">
+      <table>
+        <caption th:text="${#lists.size(retos)} + ' retos en total'">5 retos en total</caption>
+        <thead>
+          <tr>
+            <th scope="col">Reto</th>
+            <th scope="col">Fechas</th>
+            <th scope="col">Estado</th>
+            <th scope="col" class="numero">Inscritos</th>
+            <th scope="col"><span class="visualmente-oculto">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="reto : ${retos}">
+            <th scope="row">
+              <th:block th:text="${reto.titulo()}">Semana del rastreador</th:block><br>
+              <small class="entradilla"
+                     th:text="${reto.metaCocinas()} + (${reto.metaCocinas() == 1} ? ' cocina, +' : ' cocinas, +') + ${reto.puntosRecompensa()} + ' puntos'">4 cocinas, +200 puntos</small>
+            </th>
+            <td th:text="${#temporals.format(reto.fechaInicio(), 'd MMM')} + ' al ' + ${#temporals.format(reto.fechaFin(), 'd MMM yyyy')}">8 nov. al 15 nov. 2026</td>
+            <td th:text="#{${'estado.' + reto.estado()}}">Vigente</td>
+            <td class="numero" th:text="${reto.participantes()}">2</td>
+            <td>
+              <details class="confirmar" th:if="${reto.participantes() == 0}">
+                <summary class="boton boton--peligro boton--chico">Eliminar</summary>
+                <form class="confirmar__caja" th:action="@{/admin/retos/{id}/eliminar(id=${reto.id()})}" method="post">
+                  <span>¿Eliminar el reto?</span>
+                  <button type="submit" class="boton boton--peligro boton--chico">Sí, eliminar</button>
+                </form>
+              </details>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <form class="panel formulario" th:action="@{/admin/retos}" method="post" th:object="${formulario}" novalidate>
+      <h2>Crear reto</h2>
+      <div class="campo">
+        <label for="titulo">Título</label>
+        <input type="text" th:field="*{titulo}" maxlength="80" th:attr="aria-invalid=${#fields.hasErrors('titulo')} ? 'true' : null">
+        <p th:replace="~{fragmentos/base :: error('titulo')}"></p>
+      </div>
+      <div class="campo">
+        <label for="descripcion">Descripción</label>
+        <textarea th:field="*{descripcion}" maxlength="240" rows="3" th:attr="aria-invalid=${#fields.hasErrors('descripcion')} ? 'true' : null"></textarea>
+        <p th:replace="~{fragmentos/base :: error('descripcion')}"></p>
+      </div>
+      <div class="formulario formulario--dos">
+        <div class="campo">
+          <label for="metaCocinas">Meta (cocinas)</label>
+          <input type="number" th:field="*{metaCocinas}" min="1" max="50" th:attr="aria-invalid=${#fields.hasErrors('metaCocinas')} ? 'true' : null">
+          <p th:replace="~{fragmentos/base :: error('metaCocinas')}"></p>
+        </div>
+        <div class="campo">
+          <label for="puntosRecompensa">Recompensa (puntos)</label>
+          <input type="number" th:field="*{puntosRecompensa}" min="1" max="5000" th:attr="aria-invalid=${#fields.hasErrors('puntosRecompensa')} ? 'true' : null">
+          <p th:replace="~{fragmentos/base :: error('puntosRecompensa')}"></p>
+        </div>
+        <div class="campo">
+          <label for="fechaInicio">Empieza</label>
+          <input type="date" th:field="*{fechaInicio}" th:attr="aria-invalid=${#fields.hasErrors('fechaInicio')} ? 'true' : null">
+          <p th:replace="~{fragmentos/base :: error('fechaInicio')}"></p>
+        </div>
+        <div class="campo">
+          <label for="fechaFin">Termina</label>
+          <input type="date" th:field="*{fechaFin}" th:attr="aria-invalid=${#fields.hasErrors('fechaFin') or #fields.hasErrors('fechasEnOrden')} ? 'true' : null">
+          <p th:replace="~{fragmentos/base :: error('fechaFin')}"></p>
+          <p th:replace="~{fragmentos/base :: error('fechasEnOrden')}"></p>
+        </div>
+      </div>
+      <div class="formulario__acciones">
+        <button type="submit" class="boton">Crear reto</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

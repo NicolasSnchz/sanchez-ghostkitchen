@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos/base :: cabeza('Retos')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: deshacer}"></div>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+
+<main id="contenido" class="envoltura">
+  <div class="cabecera-pagina">
+    <h1>Retos</h1>
+    <p>Misiones con fecha de cierre. Inscríbete y cada cocina que caces desde ese momento cuenta para la meta.</p>
+  </div>
+
+  <section aria-labelledby="titulo-vigentes">
+    <h2 id="titulo-vigentes">Vigentes</h2>
+    <ul class="retos" th:if="${!#lists.isEmpty(vigentes)}">
+      <li class="reto" th:each="reto : ${vigentes}" th:id="'reto-' + ${reto.id()}"
+          th:classappend="${reto.completado()} ? 'reto--completado'">
+        <h3 th:text="${reto.titulo()}">Semana del rastreador</h3>
+        <p th:text="${reto.descripcion()}">Caza cuatro cocinas distintas antes de que termine la semana.</p>
+        <div class="reto__datos">
+          <span class="reto__recompensa" th:text="'+' + ${#numbers.formatInteger(reto.puntosRecompensa(), 1, 'POINT')} + ' puntos'">+200 puntos</span>
+          <span th:text="'Meta: ' + ${reto.metaCocinas()} + (${reto.metaCocinas() == 1} ? ' cocina' : ' cocinas')">Meta: 4 cocinas</span>
+          <span th:text="${reto.diasRestantes() == 0} ? 'Termina hoy' : (${reto.diasRestantes() == 1} ? 'Termina mañana' : ('Termina en ' + ${reto.diasRestantes()} + ' días'))">Termina en 4 días</span>
+          <span th:text="${reto.participantes()} + (${reto.participantes() == 1} ? ' inscrito' : ' inscritos')">2 inscritos</span>
+        </div>
+        <div class="reto__avance" th:if="${reto.inscrito()}">
+          <div class="barra barra--lila" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+               th:attr="aria-valuenow=${reto.porcentaje()},aria-label='Avance en ' + ${reto.titulo()}">
+            <span th:style="'width:' + ${reto.porcentaje()} + '%'"></span>
+          </div>
+          <span th:text="${reto.avance()} + ' de ' + ${reto.metaCocinas()} + (${reto.metaCocinas() == 1} ? ' cocina' : ' cocinas')">3 de 4 cocinas</span>
+        </div>
+        <div class="reto__pie">
+          <th:block th:if="${reto.inscrito()}">
+            <span class="cazada" th:if="${reto.completado()}">Completado</span>
+            <span class="etiqueta" th:unless="${reto.completado()}">Inscrito</span>
+            <a th:unless="${reto.completado()}" th:href="@{/explorar(abiertas=true)}">Buscar cocinas abiertas</a>
+          </th:block>
+          <th:block th:unless="${reto.inscrito()}">
+            <form sec:authorize="hasRole('CAZADOR')" th:action="@{/retos/{id}/unirse(id=${reto.id()})}" method="post">
+              <button type="submit" class="boton">Unirme al reto</button>
+            </form>
+            <a sec:authorize="!isAuthenticated()" class="boton boton--secundario" th:href="@{/ingresar}">Ingresa para unirte</a>
+          </th:block>
+        </div>
+      </li>
+    </ul>
+    <p class="vacio" th:if="${#lists.isEmpty(vigentes)}">No hay retos vigentes en este momento.</p>
+  </section>
+
+  <section class="seccion" aria-labelledby="titulo-proximos" th:if="${!#lists.isEmpty(proximos)}">
+    <h2 id="titulo-proximos">Próximos</h2>
+    <p class="entradilla">Todavía no abren inscripciones. Vuelve el día que empiezan.</p>
+    <ul class="retos">
+      <li class="reto reto--proximo" th:each="reto : ${proximos}">
+        <h3 th:text="${reto.titulo()}">Ruta de los barrios</h3>
+        <p th:text="${reto.descripcion()}">Descripción</p>
+        <div class="reto__datos">
+          <span class="reto__recompensa" th:text="'+' + ${#numbers.formatInteger(reto.puntosRecompensa(), 1, 'POINT')} + ' puntos'">+250 puntos</span>
+          <span th:text="'Meta: ' + ${reto.metaCocinas()} + (${reto.metaCocinas() == 1} ? ' cocina' : ' cocinas')">Meta: 5 cocinas</span>
+          <span th:text="'Del ' + ${#temporals.format(reto.fechaInicio(), 'd MMM')} + ' al ' + ${#temporals.format(reto.fechaFin(), 'd MMM')}">Del 16 nov. al 23 nov.</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos/base :: cabeza(${detalle.ficha().nombre()})}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: deshacer}"></div>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+<link rel="stylesheet" th:href="@{/webjars/leaflet/dist/leaflet.css}">
+
+<main id="contenido" class="envoltura" th:with="ficha=${detalle.ficha()}">
+  <div class="cocina">
+    <article>
+      <p class="cocina__migas"><a th:href="@{/explorar}">Volver al explorador</a></p>
+      <div class="cocina__etiquetas">
+        <span class="rareza" th:classappend="'rareza--' + ${#strings.toLowerCase(ficha.rareza())}"
+              th:text="#{${'rareza.' + ficha.rareza()}}">Rara</span>
+        <span class="etiqueta" th:text="#{${'categoria.' + ficha.categoria()}}">Mexicana</span>
+        <span class="etiqueta etiqueta--abierta" th:if="${ficha.abierta()}">Abierta ahora</span>
+        <span class="etiqueta etiqueta--cerrada" th:unless="${ficha.abierta()}">Cerrada ahora</span>
+        <span class="cazada" th:if="${ficha.descubierta()}">Ya la cazaste</span>
+      </div>
+      <h1 th:text="${ficha.nombre()}">Taquería Invisible</h1>
+      <p class="cocina__descripcion" th:text="${detalle.descripcion()}">Descripción</p>
+
+      <dl class="datos-cocina">
+        <div><dt>Barrio</dt><dd th:text="${ficha.barrio()}">Colsag</dd></div>
+        <div>
+          <dt>Horario</dt>
+          <dd>De <th:block th:text="${#temporals.format(ficha.horaApertura(), 'h:mm a')}">6:00 p. m.</th:block>
+            a <th:block th:text="${#temporals.format(ficha.horaCierre(), 'h:mm a')}">1:00 a. m.</th:block></dd>
+        </div>
+        <div><dt>Pedidos por</dt><dd><th:block th:replace="~{fragmentos/base :: canales(${ficha.canales()})}"></th:block></dd></div>
+        <div>
+          <dt>Calificación</dt>
+          <dd th:if="${ficha.tieneResenas()}">
+            <span class="estrellas" aria-hidden="true">★</span>
+            <th:block th:text="${#numbers.formatDecimal(ficha.calificacionPromedio(), 1, 1)}">4,5</th:block> de 5
+            (<th:block th:text="${ficha.totalResenas()} + (${ficha.totalResenas() == 1} ? ' reseña' : ' reseñas')">2 reseñas</th:block>)
+          </dd>
+          <dd th:unless="${ficha.tieneResenas()}">Sin reseñas todavía</dd>
+        </div>
+        <div>
+          <dt>Veces cazada</dt>
+          <dd th:text="${ficha.vecesCazada() == 0} ? 'Nadie la ha cazado' : ${ficha.vecesCazada()}">4</dd>
+        </div>
+        <div><dt>En el catálogo desde</dt><dd th:text="${#temporals.format(ficha.fechaAlta(), 'd MMM yyyy')}">7 oct. 2026</dd></div>
+      </dl>
+
+      <div id="mapa" class="mapa mapa--chico" data-mapa data-sin-referencia="true"
+           th:attr="data-ref-lat=${ficha.latitud()},data-ref-lng=${ficha.longitud()}"
+           role="img" th:aria-label="'Ubicación aproximada de ' + ${ficha.nombre()} + ' en el barrio ' + ${ficha.barrio()}"></div>
+      <span hidden th:attr="data-cocina=${ficha.id()},data-lat=${ficha.latitud()},data-lng=${ficha.longitud()},data-nombre=${ficha.nombre()},data-abierta=${ficha.abierta()},data-rareza=${ficha.rareza()}"></span>
+      <p class="mapa__nota">La ubicación es aproximada: las cocinas fantasma solo atienden por domicilio.</p>
+
+      <section class="seccion" id="resenas" aria-labelledby="titulo-resenas">
+        <h2 id="titulo-resenas">Reseñas
+          <small th:text="'(' + ${#lists.size(detalle.resenas())} + ')'">(2)</small></h2>
+
+        <form class="panel formulario" id="resenar" th:if="${detalle.puedeResenar()}"
+              th:action="@{/cocinas/{id}/resenas(id=${ficha.id()})}" method="post" th:object="${formularioResena}">
+          <h3>Cuenta cómo te fue</h3>
+          <fieldset class="campo">
+            <legend>Calificación</legend>
+            <div class="calificacion">
+              <label th:each="estrellas : ${#numbers.sequence(5, 1)}">
+                <input type="radio" th:field="*{calificacion}" th:value="${estrellas}">
+                <span aria-hidden="true">★</span>
+                <span class="visualmente-oculto" th:text="${estrellas} + (${estrellas == 1} ? ' estrella' : ' estrellas')">5 estrellas</span>
+              </label>
+            </div>
+            <p th:replace="~{fragmentos/base :: error('calificacion')}"></p>
+          </fieldset>
+          <div class="campo">
+            <label for="comentario">Comentario <span class="campo__ayuda">(opcional, hasta 300 caracteres)</span></label>
+            <textarea th:field="*{comentario}" maxlength="300" rows="4"
+                      th:attr="aria-invalid=${#fields.hasErrors('comentario')} ? 'true' : null"></textarea>
+            <p th:replace="~{fragmentos/base :: error('comentario')}"></p>
+          </div>
+          <div class="formulario__acciones">
+            <button type="submit" class="boton">Publicar reseña</button>
+            <span class="campo__ayuda">Suma 20 puntos. Podrás deshacerla durante 15 minutos.</span>
+          </div>
+        </form>
+
+        <ul class="resenas" th:if="${!#lists.isEmpty(detalle.resenas())}">
+          <li class="resena" th:each="resena : ${detalle.resenas()}" th:classappend="${resena.propia()} ? 'resena--propia'">
+            <div class="resena__cabeza">
+              <strong th:text="${resena.alias()}">humo_azul</strong>
+              <span class="estrellas" role="img"
+                    th:aria-label="${resena.calificacion()} + ' de 5 estrellas'"
+                    th:text="${#strings.repeat('★', resena.calificacion())} + ${#strings.repeat('☆', 5 - resena.calificacion())}">★★★★☆</span>
+              <time th:datetime="${resena.fecha()}" th:text="${#temporals.format(resena.fecha(), 'd MMM yyyy')}">3 nov. 2026</time>
+              <span class="etiqueta" th:if="${resena.propia()}">Tu reseña</span>
+            </div>
+            <p th:if="${!#strings.isEmpty(resena.comentario())}" th:text="${resena.comentario()}">Comentario</p>
+          </li>
+        </ul>
+        <p class="vacio" th:if="${#lists.isEmpty(detalle.resenas())}">Todavía nadie ha reseñado esta cocina.</p>
+      </section>
+    </article>
+
+    <aside class="caza" aria-label="Cazar esta cocina">
+      <article class="comanda recibo" th:if="${comanda != null}" aria-labelledby="titulo-recibo">
+        <div class="comanda__encabezado">
+          <span th:text="'Comanda ' + ${comanda.numero()}">Comanda 004-2215</span>
+          <time th:datetime="${comanda.hora()}" th:text="${#temporals.format(comanda.hora(), 'h:mm a')}">10:15 p. m.</time>
+        </div>
+        <h2 class="comanda__cocina" id="titulo-recibo" th:text="${comanda.cocina()}">Taquería Invisible</h2>
+        <div class="comanda__linea" th:each="linea : ${comanda.lineas()}">
+          <span th:text="#{${'concepto.' + linea.concepto()}}">Base por rareza</span>
+          <span th:text="'+' + ${linea.puntos()}">+150</span>
+        </div>
+        <div class="comanda__total"><span>Total</span><span th:text="${comanda.total()} + ' pts'">300 pts</span></div>
+        <span class="sello" aria-hidden="true">CAZADA</span>
+      </article>
+
+      <div class="caza__tarjeta" th:if="${comanda == null}" th:switch="${detalle.estadoCaza().name()}">
+        <th:block th:case="'DISPONIBLE'">
+          <h2>Cazar esta cocina</h2>
+          <p class="caza__puntos"><th:block th:text="${ficha.rareza().puntosBase()}">150</th:block> <small>puntos base</small></p>
+          <ul class="caza__bonos">
+            <li th:if="${ficha.vecesCazada() == 0}"><strong>+50</strong> por ser el primero en cazarla</li>
+            <li><strong>+10</strong> por cada día seguido de caza, hasta 5 días</li>
+            <li><strong>x1,5</strong> si cazas en la hora fantasma, de 10:00 p. m. a 4:00 a. m.</li>
+          </ul>
+          <form th:action="@{/cocinas/{id}/cazar(id=${ficha.id()})}" method="post">
+            <button type="submit" class="boton boton--grande">Cazar esta cocina</button>
+          </form>
+          <p class="campo__ayuda">Hazlo cuando pidas a la cocina. Tienes 15 minutos para deshacerlo.</p>
+        </th:block>
+        <th:block th:case="'YA_CAZADA'">
+          <h2>Ya la cazaste</h2>
+          <p class="caza__estado" th:if="${detalle.puedeResenar()}">Te falta la reseña. <a href="#resenar">Escríbela aquí</a> y suma 20 puntos.</p>
+          <p class="caza__estado" th:unless="${detalle.puedeResenar()}">También la reseñaste. Busca otra en el <a th:href="@{/explorar}">explorador</a>.</p>
+        </th:block>
+        <th:block th:case="'CERRADA'">
+          <h2>Cerrada en este momento</h2>
+          <p class="caza__estado">Solo se puede cazar mientras está abierta. Abre a
+            <th:block th:replace="~{fragmentos/base :: a-las(${ficha.horaApertura()})}"></th:block>.</p>
+          <a class="boton boton--secundario" th:href="@{/explorar(abiertas=true)}">Ver cocinas abiertas</a>
+        </th:block>
+        <th:block th:case="'LIMITE_DIARIO'">
+          <h2>Llegaste al límite de hoy</h2>
+          <p class="caza__estado">Ya hiciste 5 cazas hoy. Mañana puedes cazar esta cocina.</p>
+        </th:block>
+        <th:block th:case="*">
+          <h2>Cazar esta cocina</h2>
+          <p class="caza__puntos"><th:block th:text="${ficha.rareza().puntosBase()}">150</th:block> <small>puntos base</small></p>
+          <th:block sec:authorize="hasRole('ADMIN')">
+            <p class="caza__estado">Las cuentas de administración gestionan el catálogo y no participan en el juego.</p>
+          </th:block>
+          <th:block sec:authorize="!isAuthenticated()">
+            <p class="caza__estado">Ingresa con tu cuenta de cazador para cazarla y reseñarla.</p>
+            <div class="formulario__acciones caza__acciones">
+              <a class="boton" th:href="@{/ingresar}">Ingresar</a>
+              <a class="boton boton--secundario" th:href="@{/registro}">Crear cuenta</a>
+            </div>
+          </th:block>
+        </th:block>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<script th:src="@{/webjars/leaflet/dist/leaflet.js}" defer></script>
+<script th:src="@{/js/mapa.js}" defer></script>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

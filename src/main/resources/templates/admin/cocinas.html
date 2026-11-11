@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabeza('Catálogo de cocinas')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+
+<main id="contenido" class="envoltura">
+  <div class="cabecera-pagina barra-admin">
+    <div>
+      <h1>Catálogo de cocinas</h1>
+      <p>Una cocina con cazas no se elimina, se desactiva: así se conservan los puntos y las reseñas de los cazadores.</p>
+    </div>
+    <a class="boton" th:href="@{/admin/cocinas/nueva}">Registrar cocina</a>
+  </div>
+
+  <div class="tabla-contenedor">
+    <table>
+      <caption th:text="${#lists.size(cocinas)} + ' cocinas en total'">16 cocinas en total</caption>
+      <thead>
+        <tr>
+          <th scope="col">Cocina</th>
+          <th scope="col" class="ocultar-movil">Barrio</th>
+          <th scope="col" class="ocultar-movil">Horario</th>
+          <th scope="col" class="numero">Cazas</th>
+          <th scope="col">Estado</th>
+          <th scope="col"><span class="visualmente-oculto">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="cocina : ${cocinas}">
+          <th scope="row">
+            <th:block th:text="${cocina.nombre()}">Garbanzo Nocturno</th:block><br>
+            <small class="entradilla">
+              <th:block th:text="#{${'categoria.' + cocina.categoria()}}">Típica</th:block>,
+              <th:block th:text="#{${'rareza.' + cocina.rareza()}}">Legendaria</th:block>
+            </small>
+          </th>
+          <td class="ocultar-movil" th:text="${cocina.barrio()}">El Contento</td>
+          <td class="ocultar-movil"
+              th:text="${#temporals.format(cocina.horaApertura(), 'h:mm a')} + ' a ' + ${#temporals.format(cocina.horaCierre(), 'h:mm a')}">10:00 p. m. a 5:00 a. m.</td>
+          <td class="numero" th:text="${cocina.vecesCazada()}">6</td>
+          <td>
+            <span class="estado-activa" th:if="${cocina.activa()}">Activa</span>
+            <span class="estado-inactiva" th:unless="${cocina.activa()}">Inactiva</span>
+          </td>
+          <td>
+            <div class="acciones-fila">
+              <a class="boton boton--secundario boton--chico" th:href="@{/admin/cocinas/{id}/editar(id=${cocina.id()})}">Editar</a>
+              <form th:action="@{/admin/cocinas/{id}/estado(id=${cocina.id()})}" method="post">
+                <input type="hidden" name="activa" th:value="${!cocina.activa()}">
+                <button type="submit" class="boton boton--secundario boton--chico"
+                        th:text="${cocina.activa()} ? 'Desactivar' : 'Activar'">Desactivar</button>
+              </form>
+              <details class="confirmar" th:if="${cocina.vecesCazada() == 0}">
+                <summary class="boton boton--peligro boton--chico">Eliminar</summary>
+                <form class="confirmar__caja" th:action="@{/admin/cocinas/{id}/eliminar(id=${cocina.id()})}" method="post">
+                  <span>¿Eliminar definitivamente?</span>
+                  <button type="submit" class="boton boton--peligro boton--chico">Sí, eliminar</button>
+                </form>
+              </details>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

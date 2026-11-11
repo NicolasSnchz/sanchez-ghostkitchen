@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabeza('Mi panel')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: deshacer}"></div>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+
+<main id="contenido" class="envoltura">
+  <section class="perfil-cabecera" aria-labelledby="titulo-perfil">
+    <div>
+      <h1 id="titulo-perfil" th:text="${panel.alias()}">cazador_demo</h1>
+      <p class="entradilla" th:text="${panel.nombre()}">Cazador Demo</p>
+    </div>
+    <div class="nivel">
+      <div class="nivel__fila">
+        <p class="nivel__puntos">
+          <th:block th:text="${#numbers.formatInteger(panel.puntos(), 1, 'POINT')}">340</th:block> <small>puntos</small>
+        </p>
+        <span class="nivel__nombre" th:text="'Nivel ' + #{${'nivel.' + panel.nivel()}}">Nivel Explorador</span>
+      </div>
+      <div class="barra" role="progressbar" aria-label="Avance hacia el siguiente nivel" aria-valuemin="0" aria-valuemax="100"
+           th:attr="aria-valuenow=${panel.porcentajeNivel()}">
+        <span th:style="'width:' + ${panel.porcentajeNivel()} + '%'"></span>
+      </div>
+      <p class="nivel__siguiente" th:if="${panel.siguienteNivel().isPresent()}">
+        Te faltan <strong th:text="${#numbers.formatInteger(panel.puntosParaSubir(), 1, 'POINT')}">460</strong> puntos para
+        <strong th:text="#{${'nivel.' + panel.siguienteNivel().get()}}">Rastreador</strong>.
+      </p>
+      <p class="nivel__siguiente" th:unless="${panel.siguienteNivel().isPresent()}">Llegaste al nivel más alto del juego.</p>
+    </div>
+  </section>
+
+  <dl class="cifras">
+    <div><dt th:text="${panel.progreso().cocinasCazadas() == 1} ? 'cocina cazada' : 'cocinas cazadas'">cocinas cazadas</dt>
+      <dd th:text="${panel.progreso().cocinasCazadas()}">3</dd></div>
+    <div><dt th:text="${panel.progreso().resenasPublicadas() == 1} ? 'reseña publicada' : 'reseñas publicadas'">reseñas publicadas</dt>
+      <dd th:text="${panel.progreso().resenasPublicadas()}">1</dd></div>
+    <div><dt th:text="${panel.progreso().barriosDistintos() == 1} ? 'barrio recorrido' : 'barrios recorridos'">barrios recorridos</dt>
+      <dd th:text="${panel.progreso().barriosDistintos()}">3</dd></div>
+    <div><dt th:text="${panel.progreso().retosCompletados() == 1} ? 'reto completado' : 'retos completados'">retos completados</dt>
+      <dd th:text="${panel.progreso().retosCompletados()}">0</dd></div>
+  </dl>
+
+  <div class="columnas">
+    <div>
+      <section class="bloque" aria-labelledby="titulo-insignias">
+        <h2 id="titulo-insignias">Insignias
+          <small th:text="${panel.insigniasObtenidas()} + ' de ' + ${#lists.size(panel.insignias())}">2 de 9</small></h2>
+        <ul class="insignias">
+          <li class="insignia" th:each="insignia : ${panel.insignias()}"
+              th:classappend="${insignia.obtenida()} ? 'insignia--obtenida'">
+            <svg aria-hidden="true"><use th:href="@{/img/iconos.svg} + '#' + #{${'insignia.' + insignia.tipo() + '.icono'}}"></use></svg>
+            <strong th:text="#{${'insignia.' + insignia.tipo() + '.nombre'}}">Primer hallazgo</strong>
+            <span th:if="${insignia.obtenida()}"
+                  th:text="'Obtenida el ' + ${#temporals.format(insignia.fechaObtencion(), 'd MMM yyyy')}">Obtenida el 9 nov. 2026</span>
+            <span th:unless="${insignia.obtenida()}" th:text="#{${'insignia.' + insignia.tipo() + '.regla'}}">Caza tu primera cocina.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="bloque" aria-labelledby="titulo-cazas">
+        <h2 id="titulo-cazas">Mis cazas <small th:text="${#lists.size(panel.cazas())}">3</small></h2>
+        <ul class="lista-simple" th:if="${!#lists.isEmpty(panel.cazas())}">
+          <li th:each="caza : ${panel.cazas()}">
+            <div>
+              <a th:if="${caza.cocinaActiva()}" th:href="@{/cocinas/{id}(id=${caza.cocinaId()})}" th:text="${caza.nombreCocina()}">Pizza a Ciegas</a>
+              <span th:unless="${caza.cocinaActiva()}" th:text="${caza.nombreCocina()} + ' (ya no está en el catálogo)'">Fritanga</span>
+              <br>
+              <small>
+                <th:block th:text="${#temporals.format(caza.fechaHora(), 'd MMM, h:mm a')}">10 nov., 7:40 p. m.</th:block>,
+                <th:block th:text="${caza.barrio()}">La Riviera</th:block><th:block th:if="${caza.enHoraFantasma()}">, en hora fantasma</th:block>
+              </small>
+              <br th:if="${caza.cocinaActiva() and !caza.conResena()}">
+              <a th:if="${caza.cocinaActiva() and !caza.conResena()}" th:href="@{/cocinas/{id}(id=${caza.cocinaId()})} + '#resenar'">
+                <small>Reseñar y sumar 20 puntos</small></a>
+            </div>
+            <span class="lista-simple__puntos" th:text="'+' + ${caza.puntos()}">+110</span>
+          </li>
+        </ul>
+        <div class="vacio" th:if="${#lists.isEmpty(panel.cazas())}">
+          <p>Todavía no has cazado ninguna cocina.</p>
+          <a class="boton" th:href="@{/explorar(abiertas=true)}">Buscar cocinas abiertas</a>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <section class="bloque" aria-labelledby="titulo-mis-retos">
+        <h2 id="titulo-mis-retos">Mis retos</h2>
+        <ul class="lista-simple" th:if="${!#lists.isEmpty(panel.retos())}">
+          <li class="lista-simple__bloque" th:each="reto : ${panel.retos()}">
+            <div class="reto__avance">
+              <div class="nivel__fila">
+                <strong th:text="${reto.titulo()}">Semana del rastreador</strong>
+                <span th:text="${reto.avance()} + ' de ' + ${reto.metaCocinas()}">3 de 4</span>
+              </div>
+              <div class="barra barra--lila" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                   th:attr="aria-valuenow=${reto.porcentaje()},aria-label='Avance en ' + ${reto.titulo()}">
+                <span th:style="'width:' + ${reto.porcentaje()} + '%'"></span>
+              </div>
+              <span th:if="${reto.completado()}" th:text="'Completado: +' + ${reto.puntosRecompensa()} + ' puntos'">Completado</span>
+              <span th:unless="${reto.completado()}"
+                    th:text="${reto.diasRestantes() == 0} ? 'Termina hoy' : (${reto.diasRestantes() == 1} ? 'Termina mañana' : ('Quedan ' + ${reto.diasRestantes()} + ' días'))">Quedan 4 días</span>
+            </div>
+          </li>
+        </ul>
+        <div class="vacio" th:if="${#lists.isEmpty(panel.retos())}">
+          <p>No estás inscrito en ningún reto vigente.</p>
+          <a class="boton boton--secundario" th:href="@{/retos}">Ver retos</a>
+        </div>
+      </section>
+
+      <section class="bloque" aria-labelledby="titulo-actividad">
+        <h2 id="titulo-actividad">Actividad reciente</h2>
+        <ul class="lista-simple" th:if="${!#lists.isEmpty(panel.actividad())}">
+          <li th:each="accion : ${panel.actividad()}" th:classappend="${accion.deshecha()} ? 'actividad__deshecha'">
+            <div>
+              <span class="actividad__texto" th:text="#{${'accion.' + accion.tipo()}(${accion.detalle()})}">Cazaste Pizza a Ciegas</span>
+              <br>
+              <small>
+                <th:block th:text="${#temporals.format(accion.fechaHora(), 'd MMM, h:mm a')}">10 nov., 7:40 p. m.</th:block><th:block th:if="${accion.deshecha()}">, deshecha</th:block>
+              </small>
+            </div>
+            <span class="lista-simple__puntos" th:if="${accion.puntos() > 0}" th:text="'+' + ${accion.puntos()}">+110</span>
+          </li>
+        </ul>
+        <p class="vacio" th:if="${#lists.isEmpty(panel.actividad())}">Aquí verás cada acción que hagas y podrás deshacer la última.</p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

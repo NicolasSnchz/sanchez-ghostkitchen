@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabeza('Explorar cocinas')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: deshacer}"></div>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+<link rel="stylesheet" th:href="@{/webjars/leaflet/dist/leaflet.css}">
+
+<main id="contenido" class="envoltura">
+  <div class="cabecera-pagina">
+    <h1>Explorar cocinas</h1>
+    <p>Busca por nombre o barrio, filtra por categoría y elige cómo ordenar. El mapa muestra lo mismo que la lista.</p>
+  </div>
+
+  <div class="explorador">
+    <div>
+      <form class="filtros" th:action="@{/explorar}" method="get" th:object="${busqueda}" role="search" data-filtros>
+        <div class="campo filtros__ancho">
+          <label for="q">Nombre o barrio</label>
+          <input type="search" th:field="*{q}" maxlength="60" placeholder="Por ejemplo: arepa o Centro">
+        </div>
+        <div class="campo">
+          <label for="categoria">Categoría</label>
+          <select th:field="*{categoria}">
+            <option value="">Todas</option>
+            <option th:each="categoria : ${categorias}" th:value="${categoria}"
+                    th:text="#{${'categoria.' + categoria}}">Pizza</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="orden">Ordenar por</label>
+          <select id="orden" name="orden">
+            <option th:each="orden : ${ordenes}" th:value="${orden}" th:selected="${orden == filtro.orden()}"
+                    th:text="#{${'orden.' + orden}}">Más cercanas</option>
+          </select>
+        </div>
+        <input type="hidden" th:field="*{lat}">
+        <input type="hidden" th:field="*{lng}">
+        <div class="filtros__acciones">
+          <label class="casilla"><input type="checkbox" th:field="*{abiertas}"> Solo abiertas ahora</label>
+          <button type="button" class="boton boton--secundario boton--chico" data-ubicarme hidden>
+            <svg width="18" height="18" stroke="currentColor" aria-hidden="true"><use th:href="@{/img/iconos.svg#ubicacion}"></use></svg>
+            Usar mi ubicación
+          </button>
+          <button type="submit" class="boton boton--chico">Aplicar filtros</button>
+        </div>
+        <p class="campo__ayuda filtros__ancho" data-ubicacion-estado role="status"></p>
+      </form>
+
+      <p class="resultado-busqueda">
+        <strong th:text="${#lists.size(fichas)} + (${#lists.size(fichas) == 1} ? ' cocina' : ' cocinas')">9 cocinas</strong>.
+        <th:block th:if="${conUbicacion}">Distancias desde tu ubicación. <a th:href="@{/explorar}">Quitar ubicación y filtros</a></th:block>
+        <th:block th:unless="${conUbicacion}">Distancias desde el Parque Santander, en el centro de Cúcuta.</th:block>
+      </p>
+
+      <ul class="lista-cocinas" th:if="${!#lists.isEmpty(fichas)}">
+        <li class="ficha" th:each="ficha : ${fichas}"
+            th:classappend="${ficha.rareza().name() == 'LEGENDARIA'} ? 'ficha--legendaria'"
+            th:attr="data-cocina=${ficha.id()},data-lat=${ficha.latitud()},data-lng=${ficha.longitud()},data-nombre=${ficha.nombre()},data-abierta=${ficha.abierta()},data-rareza=${ficha.rareza()},data-url=@{/cocinas/{id}(id=${ficha.id()})}">
+          <div>
+            <h3><a th:href="@{/cocinas/{id}(id=${ficha.id()})}" th:text="${ficha.nombre()}">Pizza a Ciegas</a></h3>
+            <p class="ficha__lugar" th:text="#{${'categoria.' + ficha.categoria()}} + ', ' + ${ficha.barrio()}">Pizza, La Riviera</p>
+          </div>
+          <div class="ficha__lado">
+            <span class="ficha__distancia" th:text="${#numbers.formatDecimal(ficha.distanciaKm(), 1, 1)} + ' km'">1,2 km</span>
+            <span class="rareza" th:classappend="'rareza--' + ${#strings.toLowerCase(ficha.rareza())}"
+                  th:text="#{${'rareza.' + ficha.rareza()}}">Común</span>
+          </div>
+          <div class="ficha__datos">
+            <span class="etiqueta etiqueta--abierta" th:if="${ficha.abierta()}">Abierta hasta
+              <th:block th:replace="~{fragmentos/base :: a-las(${ficha.horaCierre()})}"></th:block></span>
+            <span class="etiqueta etiqueta--cerrada" th:unless="${ficha.abierta()}">Cerrada, abre a
+              <th:block th:replace="~{fragmentos/base :: a-las(${ficha.horaApertura()})}"></th:block></span>
+            <span th:if="${ficha.tieneResenas()}"><span class="estrellas" aria-hidden="true">★</span>
+              <th:block th:text="${#numbers.formatDecimal(ficha.calificacionPromedio(), 1, 1)}">4,5</th:block>
+              (<th:block th:text="${ficha.totalResenas()} + (${ficha.totalResenas() == 1} ? ' reseña' : ' reseñas')">3 reseñas</th:block>)</span>
+            <span th:unless="${ficha.tieneResenas()}">Sin reseñas todavía</span>
+            <span th:text="${ficha.vecesCazada() == 0} ? 'Nadie la ha cazado' : (${ficha.vecesCazada()} + (${ficha.vecesCazada() == 1} ? ' caza' : ' cazas'))">5 cazas</span>
+            <span class="cazada" th:if="${ficha.descubierta()}">Ya la cazaste</span>
+          </div>
+        </li>
+      </ul>
+      <div class="sin-resultados" th:if="${#lists.isEmpty(fichas)}">
+        <p>Ninguna cocina coincide con esos filtros.</p>
+        <a class="boton boton--secundario" th:href="@{/explorar}">Ver todas las cocinas</a>
+      </div>
+    </div>
+
+    <aside class="mapa-contenedor" aria-label="Mapa de las cocinas de la lista">
+      <div id="mapa" class="mapa" data-mapa
+           th:attr="data-ref-lat=${filtro.referencia().latitud()},data-ref-lng=${filtro.referencia().longitud()},data-con-ubicacion=${conUbicacion}"></div>
+      <noscript><p class="mapa__nota">Activa JavaScript para ver el mapa. La lista funciona igual sin él.</p></noscript>
+      <p class="mapa__nota">Lila: cocinas comunes y raras. Ámbar: legendarias. Gris: cerradas en este momento.</p>
+    </aside>
+  </div>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<script th:src="@{/webjars/leaflet/dist/leaflet.js}" defer></script>
+<script th:src="@{/js/mapa.js}" defer></script>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

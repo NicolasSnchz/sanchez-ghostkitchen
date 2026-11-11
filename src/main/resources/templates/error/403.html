@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos/base :: cabeza('Acceso denegado')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<main id="contenido" class="envoltura error-pagina">
+  <img th:src="@{/img/logo.svg}" alt="" width="96" height="96">
+  <p class="error-pagina__codigo">Error 403</p>
+  <h1>Esta puerta no es para ti.</h1>
+  <p class="entradilla">Tu cuenta no tiene permiso para ver esta página, o la sesión expiró mientras la tenías abierta. Ingresa de nuevo e inténtalo otra vez.</p>
+  <div class="formulario__acciones">
+    <a class="boton" th:href="@{/}">Volver al inicio</a>
+    <a class="boton boton--secundario" th:href="@{/ingresar}" sec:authorize="!isAuthenticated()">Ingresar</a>
+    <form th:action="@{/salir}" method="post" sec:authorize="isAuthenticated()">
+      <button type="submit" class="boton boton--secundario">Salir e ingresar con otra cuenta</button>
+    </form>
+  </div>
+</main>
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+</body>
+</html>

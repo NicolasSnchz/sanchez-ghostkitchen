@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="GhostKitchen Hunter">
+  <circle cx="24" cy="8.6" r="2.6" fill="#F2A93B"/>
+  <path d="M7 36V29.5C7 19.3 14.6 11.8 24 11.8S41 19.3 41 29.5V36a4.25 4.25 0 0 1-8.5 0a4.25 4.25 0 0 1-8.5 0a4.25 4.25 0 0 1-8.5 0A4.25 4.25 0 0 1 7 36Z" fill="#B8A6FF"/>
+  <path d="M12.5 23.5c1.6-3.9 4.6-6.4 8.4-7.2" fill="none" stroke="#F3EFE6" stroke-width="1.8" stroke-linecap="round" opacity=".75"/>
+  <ellipse cx="19" cy="27.5" rx="2.4" ry="3" fill="#151326"/>
+  <ellipse cx="29" cy="27.5" rx="2.4" ry="3" fill="#151326"/>
+  <path d="M5 40.5h38" stroke="#F2A93B" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

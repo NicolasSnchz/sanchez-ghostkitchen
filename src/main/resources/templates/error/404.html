@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabeza('Página no encontrada')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<main id="contenido" class="envoltura error-pagina">
+  <img th:src="@{/img/logo.svg}" alt="" width="96" height="96">
+  <p class="error-pagina__codigo">Error 404</p>
+  <h1>Esta cocina se esfumó.</h1>
+  <p class="entradilla">La página que buscas no existe o la cocina ya no está en el catálogo. Puede que el enlace esté mal escrito.</p>
+  <div class="formulario__acciones">
+    <a class="boton" th:href="@{/explorar}">Ir al explorador</a>
+    <a class="boton boton--secundario" th:href="@{/}">Volver al inicio</a>
+  </div>
+</main>
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+</body>
+</html>

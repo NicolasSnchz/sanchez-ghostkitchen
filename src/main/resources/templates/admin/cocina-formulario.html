@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabeza((${cocinaId == null} ? 'Registrar cocina' : 'Editar cocina'))}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+
+<main id="contenido" class="envoltura">
+  <div class="cabecera-pagina">
+    <p class="cocina__migas"><a th:href="@{/admin/cocinas}">Volver al catálogo</a></p>
+    <h1 th:text="${cocinaId == null} ? 'Registrar cocina' : 'Editar cocina'">Registrar cocina</h1>
+    <p>Las coordenadas deben quedar dentro del área urbana de Cúcuta. Puedes copiarlas de cualquier mapa.</p>
+  </div>
+
+  <form class="panel formulario formulario--dos" method="post" novalidate th:object="${formulario}"
+        th:action="${cocinaId == null} ? @{/admin/cocinas} : @{/admin/cocinas/{id}(id=${cocinaId})}">
+    <div class="campo">
+      <label for="nombre">Nombre</label>
+      <input type="text" th:field="*{nombre}" maxlength="80" th:attr="aria-invalid=${#fields.hasErrors('nombre')} ? 'true' : null">
+      <p th:replace="~{fragmentos/base :: error('nombre')}"></p>
+    </div>
+    <div class="campo">
+      <label for="barrio">Barrio</label>
+      <input type="text" th:field="*{barrio}" maxlength="60" th:attr="aria-invalid=${#fields.hasErrors('barrio')} ? 'true' : null">
+      <p th:replace="~{fragmentos/base :: error('barrio')}"></p>
+    </div>
+    <div class="campo formulario__ancho">
+      <label for="descripcion">Descripción</label>
+      <textarea th:field="*{descripcion}" maxlength="400" rows="3" th:attr="aria-invalid=${#fields.hasErrors('descripcion')} ? 'true' : null"></textarea>
+      <p th:replace="~{fragmentos/base :: error('descripcion')}"></p>
+    </div>
+    <div class="campo">
+      <label for="categoria">Categoría</label>
+      <select th:field="*{categoria}" th:attr="aria-invalid=${#fields.hasErrors('categoria')} ? 'true' : null">
+        <option value="">Elige una categoría</option>
+        <option th:each="categoria : ${categorias}" th:value="${categoria}" th:text="#{${'categoria.' + categoria}}">Pizza</option>
+      </select>
+      <p th:replace="~{fragmentos/base :: error('categoria')}"></p>
+    </div>
+    <div class="campo">
+      <label for="rareza">Rareza</label>
+      <select th:field="*{rareza}" th:attr="aria-invalid=${#fields.hasErrors('rareza')} ? 'true' : null">
+        <option value="">Elige una rareza</option>
+        <option th:each="rareza : ${rarezas}" th:value="${rareza}"
+                th:text="#{${'rareza.' + rareza}} + ' (' + ${rareza.puntosBase()} + ' puntos)'">Común (100 puntos)</option>
+      </select>
+      <p th:replace="~{fragmentos/base :: error('rareza')}"></p>
+    </div>
+    <div class="campo">
+      <label for="horaApertura">Abre a las</label>
+      <input type="time" th:field="*{horaApertura}" th:attr="aria-invalid=${#fields.hasErrors('horaApertura')} ? 'true' : null">
+      <p th:replace="~{fragmentos/base :: error('horaApertura')}"></p>
+    </div>
+    <div class="campo">
+      <label for="horaCierre">Cierra a las</label>
+      <input type="time" th:field="*{horaCierre}" th:attr="aria-invalid=${#fields.hasErrors('horaCierre') or #fields.hasErrors('horarioValido')} ? 'true' : null">
+      <p class="campo__ayuda">Si cierra después de medianoche, escribe la hora del día siguiente, por ejemplo 2:00 a. m.</p>
+      <p th:replace="~{fragmentos/base :: error('horaCierre')}"></p>
+      <p th:replace="~{fragmentos/base :: error('horarioValido')}"></p>
+    </div>
+    <div class="campo">
+      <label for="latitud">Latitud</label>
+      <input type="number" th:field="*{latitud}" step="0.0001" min="7.80" max="8.00" inputmode="decimal"
+             th:attr="aria-invalid=${#fields.hasErrors('latitud')} ? 'true' : null">
+      <p th:replace="~{fragmentos/base :: error('latitud')}"></p>
+    </div>
+    <div class="campo">
+      <label for="longitud">Longitud</label>
+      <input type="number" th:field="*{longitud}" step="0.0001" min="-72.58" max="-72.42" inputmode="decimal"
+             th:attr="aria-invalid=${#fields.hasErrors('longitud')} ? 'true' : null">
+      <p th:replace="~{fragmentos/base :: error('longitud')}"></p>
+    </div>
+    <fieldset class="campo formulario__ancho">
+      <legend>Canales de pedido</legend>
+      <div class="grupo-casillas">
+        <label class="casilla" th:each="canal : ${canalesDisponibles}">
+          <input type="checkbox" th:field="*{canales}" th:value="${canal}">
+          <span th:text="#{${'canal.' + canal}}">Rappi</span>
+        </label>
+      </div>
+      <p th:replace="~{fragmentos/base :: error('canales')}"></p>
+    </fieldset>
+    <div class="formulario__acciones formulario__ancho">
+      <button type="submit" class="boton boton--grande" th:text="${cocinaId == null} ? 'Registrar cocina' : 'Guardar cambios'">Registrar cocina</button>
+      <a th:href="@{/admin/cocinas}">Cancelar</a>
+    </div>
+  </form>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>

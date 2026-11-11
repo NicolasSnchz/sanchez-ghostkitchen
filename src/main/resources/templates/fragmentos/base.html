@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="cabeza(titulo)">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${titulo} + ' | GhostKitchen Hunter'">GhostKitchen Hunter</title>
+  <meta name="description" content="Encuentra las cocinas fantasma de Cúcuta, cázalas y gana puntos.">
+  <meta name="theme-color" content="#151326">
+  <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+  <link rel="preload" th:href="@{/fuentes/bricolage-grotesque.woff2}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" th:href="@{/fuentes/figtree.woff2}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<header th:fragment="encabezado" class="encabezado">
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <div class="envoltura encabezado__fila">
+    <a class="marca" th:href="@{/}">
+      <img th:src="@{/img/logo.svg}" alt="" width="34" height="34">
+      GhostKitchen <span>Hunter</span>
+    </a>
+    <nav aria-label="Principal">
+      <ul class="menu">
+        <li sec:authorize="!hasRole('ADMIN')"><a th:href="@{/explorar}"
+               th:attr="aria-current=${rutaActual == '/explorar'} ? 'page' : null">Explorar</a></li>
+        <li sec:authorize="!hasRole('ADMIN')"><a th:href="@{/retos}"
+               th:attr="aria-current=${rutaActual == '/retos'} ? 'page' : null">Retos</a></li>
+        <li><a th:href="@{/ranking}"
+               th:attr="aria-current=${rutaActual == '/ranking'} ? 'page' : null">Ranking</a></li>
+        <li sec:authorize="hasRole('CAZADOR')"><a th:href="@{/perfil}"
+               th:attr="aria-current=${rutaActual == '/perfil'} ? 'page' : null">Mi panel</a></li>
+        <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/cocinas}"
+               th:attr="aria-current=${rutaActual != null and #strings.startsWith(rutaActual, '/admin/cocinas')} ? 'page' : null">Cocinas</a></li>
+        <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/retos}"
+               th:attr="aria-current=${rutaActual == '/admin/retos'} ? 'page' : null">Retos</a></li>
+      </ul>
+    </nav>
+    <div class="sesion" sec:authorize="isAuthenticated()">
+      <span class="sesion__nombre">Hola, <strong sec:authentication="principal.nombreVisible">cazador</strong></span>
+      <form th:action="@{/salir}" method="post">
+        <button type="submit" class="boton boton--secundario boton--chico">Salir</button>
+      </form>
+    </div>
+    <div class="sesion" sec:authorize="!isAuthenticated()">
+      <a class="boton boton--secundario boton--chico" th:href="@{/ingresar}">Ingresar</a>
+      <a class="boton boton--chico" th:href="@{/registro}">Crear cuenta</a>
+    </div>
+  </div>
+</header>
+
+<div th:fragment="deshacer" class="deshacer" th:if="${deshacible != null}">
+  <div class="envoltura deshacer__fila" data-deshacer th:attr="data-segundos=${segundosParaDeshacer}">
+    <p>
+      Última acción:
+      <strong th:text="#{${'accion.' + deshacible.tipo()}(${deshacible.detalle()})}">Cazaste Pizza a Ciegas</strong>
+      <span th:if="${deshacible.puntos() > 0}" th:text="'(+' + ${deshacible.puntos()} + ' puntos)'">(+150 puntos)</span>
+    </p>
+    <p class="deshacer__tiempo" data-deshacer-tiempo>
+      Puedes deshacerla hasta las <span th:text="${#temporals.format(deshacible.disponibleHasta(), 'h:mm a')}">9:15 p. m.</span>
+    </p>
+    <form th:action="@{/acciones/deshacer}" method="post">
+      <button type="submit" class="boton boton--secundario boton--chico">
+        <svg width="18" height="18" stroke="currentColor" aria-hidden="true"><use th:href="@{/img/iconos.svg#deshacer}"></use></svg>
+        Deshacer
+      </button>
+    </form>
+  </div>
+</div>
+
+<div th:fragment="avisos" class="envoltura avisos" role="status"
+     th:if="${avisoExito != null or avisoExitoClave != null or avisoError != null or (novedades != null and !#lists.isEmpty(novedades))}">
+  <div class="aviso aviso--error" th:if="${avisoError != null}" role="alert"><p th:text="${avisoError}">Error</p></div>
+  <div class="aviso aviso--exito" th:if="${avisoExito != null}"><p th:text="${avisoExito}">Listo</p></div>
+  <div class="aviso aviso--exito" th:if="${avisoExitoClave != null}"><p th:text="#{${avisoExitoClave}}">Listo</p></div>
+  <th:block th:if="${novedades != null}">
+    <div class="aviso aviso--novedad" th:each="novedad : ${novedades}"><p th:text="${novedad}">Novedad</p></div>
+  </th:block>
+</div>
+
+<footer th:fragment="pie" class="pie">
+  <div class="envoltura pie__fila">
+    <p>GhostKitchen Hunter. Proyecto final de Patrones de Diseño, Universidad de Santander, Cúcuta.</p>
+    <p>Las cocinas del catálogo son ficticias; los barrios son reales.</p>
+  </div>
+</footer>
+
+<th:block th:fragment="scripts">
+  <script th:src="@{/js/app.js}" defer></script>
+</th:block>
+
+<th:block th:fragment="a-las(hora)"
+          th:text="(${#temporals.hour(hora) % 12 == 1} ? 'la ' : 'las ') + ${#temporals.format(hora, 'h:mm a')}">las 10:00 p. m.</th:block>
+
+<th:block th:fragment="canales(lista)" th:each="canal, vuelta : ${#lists.sort(#lists.toList(lista))}"><th:block
+    th:text="#{${'canal.' + canal}}">Rappi</th:block><th:block th:if="${vuelta.count < vuelta.size - 1}">, </th:block><th:block
+    th:if="${vuelta.count == vuelta.size - 1}"> y </th:block></th:block>
+
+<p th:fragment="error(campo)" class="campo__error" th:if="${#fields.hasErrors(campo)}"
+   th:id="'error-' + ${campo}" th:text="${#fields.errors(campo)[0]}">Error del campo</p>
+
+</body>
+</html>

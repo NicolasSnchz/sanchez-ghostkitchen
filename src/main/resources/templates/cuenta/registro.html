@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/base :: cabeza('Crear cuenta')}"></head>
+<body>
+<header th:replace="~{fragmentos/base :: encabezado}"></header>
+<div th:replace="~{fragmentos/base :: avisos}"></div>
+
+<main id="contenido" class="envoltura cuenta cuenta--sola">
+  <section class="panel" aria-labelledby="titulo-registro">
+    <h1 id="titulo-registro">Crear cuenta de cazador</h1>
+    <p class="entradilla">Tu alias aparece en el ranking y en tus reseñas. El correo no se muestra a nadie.</p>
+    <form class="formulario" th:action="@{/registro}" method="post" th:object="${formulario}" novalidate>
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input type="text" th:field="*{nombre}" autocomplete="name" maxlength="80"
+               th:attr="aria-invalid=${#fields.hasErrors('nombre')} ? 'true' : null">
+        <p th:replace="~{fragmentos/base :: error('nombre')}"></p>
+      </div>
+      <div class="campo">
+        <label for="alias">Alias</label>
+        <input type="text" th:field="*{alias}" autocomplete="nickname" maxlength="20" pattern="[A-Za-z0-9_]{3,20}"
+               aria-describedby="ayuda-alias" th:attr="aria-invalid=${#fields.hasErrors('alias')} ? 'true' : null">
+        <p class="campo__ayuda" id="ayuda-alias">De 3 a 20 caracteres: letras sin tilde, números o guion bajo.</p>
+        <p th:replace="~{fragmentos/base :: error('alias')}"></p>
+      </div>
+      <div class="campo">
+        <label for="correo">Correo</label>
+        <input type="email" th:field="*{correo}" autocomplete="email" maxlength="120"
+               th:attr="aria-invalid=${#fields.hasErrors('correo')} ? 'true' : null">
+        <p th:replace="~{fragmentos/base :: error('correo')}"></p>
+      </div>
+      <div class="campo">
+        <label for="clave">Clave</label>
+        <input type="password" th:field="*{clave}" autocomplete="new-password" maxlength="72"
+               aria-describedby="ayuda-clave"
+               th:attr="aria-invalid=${#fields.hasErrors('clave') or #fields.hasErrors('claveCabeEnBcrypt')} ? 'true' : null">
+        <p class="campo__ayuda" id="ayuda-clave">Mínimo 8 caracteres, con al menos una letra y un número.</p>
+        <p th:replace="~{fragmentos/base :: error('clave')}"></p>
+        <p th:replace="~{fragmentos/base :: error('claveCabeEnBcrypt')}"></p>
+      </div>
+      <div class="campo">
+        <label for="confirmacion">Repite la clave</label>
+        <input type="password" th:field="*{confirmacion}" autocomplete="new-password" maxlength="72"
+               th:attr="aria-invalid=${#fields.hasErrors('clavesCoinciden')} ? 'true' : null">
+        <p th:replace="~{fragmentos/base :: error('clavesCoinciden')}"></p>
+      </div>
+      <div class="formulario__acciones">
+        <button type="submit" class="boton boton--grande">Crear cuenta</button>
+        <span>¿Ya tienes una? <a th:href="@{/ingresar}">Ingresa</a></span>
+      </div>
+    </form>
+  </section>
+</main>
+
+<footer th:replace="~{fragmentos/base :: pie}"></footer>
+<th:block th:replace="~{fragmentos/base :: scripts}"></th:block>
+</body>
+</html>
