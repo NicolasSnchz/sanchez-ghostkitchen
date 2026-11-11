@@ -1,0 +1,247 @@
+{
+  "administrador": {
+    "nombre": "Administración GhostKitchen",
+    "correo": "admin@ghostkitchen.co",
+    "clave": "Admin2026"
+  },
+  "cocinas": [
+    {
+      "nombre": "Garbanzo Nocturno",
+      "descripcion": "Pasteles de garbanzo y pastelitos de carne recién fritos para la madrugada. Despacha solo por WhatsApp y con domiciliario propio, nunca por apps.",
+      "categoria": "TIPICA", "rareza": "LEGENDARIA", "apertura": "22:00", "cierre": "05:00",
+      "latitud": 7.8822, "longitud": -72.5098, "barrio": "El Contento",
+      "canales": ["WHATSAPP", "DOMICILIO_PROPIO"], "diasDesdeAlta": 58, "activa": true
+    },
+    {
+      "nombre": "La Olla Prohibida",
+      "descripcion": "Mute santandereano, chivo guisado y pepitoria en porciones para dos. Cocina de casa grande sin letrero en pleno centro.",
+      "categoria": "TIPICA", "rareza": "RARA", "apertura": "11:00", "cierre": "16:00",
+      "latitud": 7.8871, "longitud": -72.5039, "barrio": "Centro",
+      "canales": ["RAPPI", "WHATSAPP"], "diasDesdeAlta": 55, "activa": true
+    },
+    {
+      "nombre": "Smash Fantasma",
+      "descripcion": "Hamburguesas smash de doble carne con queso fundido y papas rústicas. Funciona desde una cocina compartida en Quinta Bosch.",
+      "categoria": "HAMBURGUESAS", "rareza": "COMUN", "apertura": "17:00", "cierre": "02:00",
+      "latitud": 7.8981, "longitud": -72.4952, "barrio": "Quinta Bosch",
+      "canales": ["RAPPI", "DIDI_FOOD"], "diasDesdeAlta": 50, "activa": true
+    },
+    {
+      "nombre": "Pizza a Ciegas",
+      "descripcion": "Pizza de masa delgada horneada en piedra. La carta cambia cada semana y solo se conoce al abrir la caja.",
+      "categoria": "PIZZA", "rareza": "COMUN", "apertura": "12:00", "cierre": "23:00",
+      "latitud": 7.8905, "longitud": -72.4890, "barrio": "La Riviera",
+      "canales": ["RAPPI", "DIDI_FOOD", "WHATSAPP"], "diasDesdeAlta": 47, "activa": true
+    },
+    {
+      "nombre": "Nori Clandestino",
+      "descripcion": "Rolls de autor y poke bowls preparados por dos cocineros que trabajan desde un apartamento adaptado.",
+      "categoria": "SUSHI", "rareza": "RARA", "apertura": "12:00", "cierre": "22:00",
+      "latitud": 7.9006, "longitud": -72.4855, "barrio": "Prados del Este",
+      "canales": ["RAPPI"], "diasDesdeAlta": 44, "activa": true
+    },
+    {
+      "nombre": "Arepa Sin Puerta",
+      "descripcion": "Arepas de maíz pelao rellenas de carne desmechada, pollo o queso, con suero costeño aparte.",
+      "categoria": "AREPAS", "rareza": "COMUN", "apertura": "06:00", "cierre": "14:00",
+      "latitud": 7.8944, "longitud": -72.4931, "barrio": "Popular",
+      "canales": ["WHATSAPP", "DOMICILIO_PROPIO"], "diasDesdeAlta": 41, "activa": true
+    },
+    {
+      "nombre": "Pollo en la Sombra",
+      "descripcion": "Pollo asado al carbón con yuca, arepa y ají de cilantro. Cuarto, medio o entero.",
+      "categoria": "POLLO", "rareza": "COMUN", "apertura": "11:00", "cierre": "23:00",
+      "latitud": 7.9071, "longitud": -72.5199, "barrio": "Atalaya",
+      "canales": ["DIDI_FOOD", "DOMICILIO_PROPIO"], "diasDesdeAlta": 38, "activa": true
+    },
+    {
+      "nombre": "Taquería Invisible",
+      "descripcion": "Tacos al pastor, birria con consomé y quesadillas en tortilla hecha a mano.",
+      "categoria": "MEXICANA", "rareza": "RARA", "apertura": "18:00", "cierre": "01:00",
+      "latitud": 7.8941, "longitud": -72.4876, "barrio": "Colsag",
+      "canales": ["RAPPI", "WHATSAPP"], "diasDesdeAlta": 35, "activa": true
+    },
+    {
+      "nombre": "Wok del Callejón",
+      "descripcion": "Arroz frito, chop suey y tallarines salteados al wok con fuego alto.",
+      "categoria": "ASIATICA", "rareza": "COMUN", "apertura": "11:30", "cierre": "22:30",
+      "latitud": 7.8814, "longitud": -72.4864, "barrio": "San Mateo",
+      "canales": ["RAPPI", "DIDI_FOOD"], "diasDesdeAlta": 32, "activa": true
+    },
+    {
+      "nombre": "Dulce Penumbra",
+      "descripcion": "Brownies, cheesecake de maracuyá y tres leches en vaso. Repostería que solo vende por encargo y domicilio.",
+      "categoria": "POSTRES", "rareza": "RARA", "apertura": "14:00", "cierre": "00:00",
+      "latitud": 7.8922, "longitud": -72.4918, "barrio": "Sayago",
+      "canales": ["RAPPI", "WHATSAPP"], "diasDesdeAlta": 29, "activa": true
+    },
+    {
+      "nombre": "Bowl Secreto",
+      "descripcion": "Bowls de quinoa, pollo a la plancha y vegetales asados, con salsas sin azúcar añadida.",
+      "categoria": "SALUDABLE", "rareza": "COMUN", "apertura": "07:00", "cierre": "16:00",
+      "latitud": 7.8996, "longitud": -72.4868, "barrio": "Prados del Este",
+      "canales": ["RAPPI", "DIDI_FOOD"], "diasDesdeAlta": 26, "activa": true
+    },
+    {
+      "nombre": "Chivo de Medianoche",
+      "descripcion": "Chivo al horno con pepitoria, yuca y arepa, servido en porciones grandes hasta la madrugada.",
+      "categoria": "TIPICA", "rareza": "LEGENDARIA", "apertura": "19:00", "cierre": "04:00",
+      "latitud": 7.9186, "longitud": -72.5224, "barrio": "Motilones",
+      "canales": ["WHATSAPP"], "diasDesdeAlta": 23, "activa": true
+    },
+    {
+      "nombre": "Burger Bajo Llave",
+      "descripcion": "Hamburguesas de carne madurada con pan brioche horneado en casa y salsas propias.",
+      "categoria": "HAMBURGUESAS", "rareza": "COMUN", "apertura": "12:00", "cierre": "22:00",
+      "latitud": 7.9117, "longitud": -72.5202, "barrio": "Los Comuneros",
+      "canales": ["DIDI_FOOD", "DOMICILIO_PROPIO"], "diasDesdeAlta": 18, "activa": true
+    },
+    {
+      "nombre": "Ramen de Contrabando",
+      "descripcion": "Ramen de cerdo con caldo cocido doce horas, huevo marinado y fideos frescos.",
+      "categoria": "ASIATICA", "rareza": "RARA", "apertura": "18:00", "cierre": "02:00",
+      "latitud": 7.8857, "longitud": -72.5052, "barrio": "Centro",
+      "canales": ["RAPPI"], "diasDesdeAlta": 12, "activa": true
+    },
+    {
+      "nombre": "Desayunos Sin Letrero",
+      "descripcion": "Caldo de costilla, pan de agua, huevos pericos y café cerrero desde las cinco de la mañana.",
+      "categoria": "AREPAS", "rareza": "COMUN", "apertura": "05:00", "cierre": "11:30",
+      "latitud": 7.9018, "longitud": -72.5215, "barrio": "Cúcuta 75",
+      "canales": ["WHATSAPP", "DOMICILIO_PROPIO"], "diasDesdeAlta": 6, "activa": true
+    },
+    {
+      "nombre": "Fritanga Fugitiva",
+      "descripcion": "Chicharrón, morcilla, papa criolla y bofe en picada para compartir. Suspendida mientras cambia de cocina.",
+      "categoria": "TIPICA", "rareza": "COMUN", "apertura": "16:00", "cierre": "23:00",
+      "latitud": 7.9286, "longitud": -72.5004, "barrio": "La Ínsula",
+      "canales": ["WHATSAPP"], "diasDesdeAlta": 60, "activa": false
+    }
+  ],
+  "retos": [
+    {
+      "titulo": "Semana del rastreador",
+      "descripcion": "Caza cuatro cocinas distintas antes de que termine la semana.",
+      "metaCocinas": 4, "puntosRecompensa": 200, "inicioRelativo": -3, "finRelativo": 4
+    },
+    {
+      "titulo": "Doble o nada",
+      "descripcion": "Caza dos cocinas antes del cierre del reto.",
+      "metaCocinas": 2, "puntosRecompensa": 120, "inicioRelativo": -1, "finRelativo": 2
+    },
+    {
+      "titulo": "Gran cacería del mes",
+      "descripcion": "Caza ocho cocinas durante el mes. Cuentan todas las categorías.",
+      "metaCocinas": 8, "puntosRecompensa": 500, "inicioRelativo": -10, "finRelativo": 20
+    },
+    {
+      "titulo": "Arranque de temporada",
+      "descripcion": "Caza tres cocinas durante la primera temporada del juego.",
+      "metaCocinas": 3, "puntosRecompensa": 150, "inicioRelativo": -40, "finRelativo": -20
+    },
+    {
+      "titulo": "Ruta de los barrios",
+      "descripcion": "Caza cinco cocinas de la ruta de barrios cuando abra el reto.",
+      "metaCocinas": 5, "puntosRecompensa": 250, "inicioRelativo": 5, "finRelativo": 12
+    }
+  ],
+  "cazadores": [
+    {
+      "nombre": "Cazador de Prueba", "alias": "cazador_demo", "correo": "cazador@ghostkitchen.co", "clave": "Cazador2026",
+      "diasDesdeRegistro": 9,
+      "retos": [{ "titulo": "Semana del rastreador", "diasAtras": 2 }],
+      "cazas": [
+        { "cocina": "Arepa Sin Puerta", "diasAtras": 2, "hora": "09:15" },
+        { "cocina": "Pizza a Ciegas", "diasAtras": 1, "hora": "19:40",
+          "resena": { "calificacion": 4, "comentario": "Masa delgada y bien horneada. La de pepperoni llegó caliente aunque el pedido tardó un poco." } },
+        { "cocina": "Smash Fantasma", "diasAtras": 1, "hora": "22:30" }
+      ]
+    },
+    {
+      "nombre": "Valentina Rojas", "alias": "humo_azul", "correo": "valentina.rojas@ghostkitchen.co", "clave": "Cazador2026",
+      "diasDesdeRegistro": 30,
+      "retos": [{ "titulo": "Gran cacería del mes", "diasAtras": 10 }],
+      "cazas": [
+        { "cocina": "Garbanzo Nocturno", "diasAtras": 20, "hora": "23:10",
+          "resena": { "calificacion": 5, "comentario": "Los pasteles de garbanzo llegan crocantes incluso a la una de la mañana. El ají de la casa vale la caza." } },
+        { "cocina": "La Olla Prohibida", "diasAtras": 19, "hora": "12:30",
+          "resena": { "calificacion": 4, "comentario": "El mute sabe a cocina de abuela. La porción alcanza para dos personas." } },
+        { "cocina": "Smash Fantasma", "diasAtras": 18, "hora": "19:45" },
+        { "cocina": "Nori Clandestino", "diasAtras": 17, "hora": "13:15",
+          "resena": { "calificacion": 5, "comentario": "El roll acevichado está a la altura de cualquier restaurante con local. Empaque impecable." } },
+        { "cocina": "Taquería Invisible", "diasAtras": 16, "hora": "20:30" },
+        { "cocina": "Chivo de Medianoche", "diasAtras": 12, "hora": "00:40" },
+        { "cocina": "Dulce Penumbra", "diasAtras": 11, "hora": "15:20",
+          "resena": { "calificacion": 4, "comentario": "El cheesecake de maracuyá es el mejor que he probado en Cúcuta. El brownie, un poco seco." } },
+        { "cocina": "Wok del Callejón", "diasAtras": 10, "hora": "12:10" },
+        { "cocina": "Ramen de Contrabando", "diasAtras": 6, "hora": "19:30",
+          "resena": { "calificacion": 5, "comentario": "Caldo espeso y fideos firmes. El huevo marinado está en su punto." } },
+        { "cocina": "Bowl Secreto", "diasAtras": 5, "hora": "08:15" },
+        { "cocina": "Pizza a Ciegas", "diasAtras": 4, "hora": "21:00" }
+      ]
+    },
+    {
+      "nombre": "Andrés Pabón", "alias": "brasa_norte", "correo": "andres.pabon@ghostkitchen.co", "clave": "Cazador2026",
+      "diasDesdeRegistro": 35,
+      "retos": [
+        { "titulo": "Arranque de temporada", "diasAtras": 23 },
+        { "titulo": "Semana del rastreador", "diasAtras": 3 }
+      ],
+      "cazas": [
+        { "cocina": "Desayunos Sin Letrero", "diasAtras": 5, "hora": "06:40",
+          "resena": { "calificacion": 4, "comentario": "El caldo de costilla llega hirviendo y el pan de agua es del día. Ideal antes del trabajo." } },
+        { "cocina": "Pollo en la Sombra", "diasAtras": 21, "hora": "12:20" },
+        { "cocina": "Wok del Callejón", "diasAtras": 20, "hora": "13:30" },
+        { "cocina": "La Olla Prohibida", "diasAtras": 22, "hora": "13:05" },
+        { "cocina": "Burger Bajo Llave", "diasAtras": 14, "hora": "13:00",
+          "resena": { "calificacion": 3, "comentario": "Buena carne, pero el pan llegó aplastado. Pediría de nuevo con otro empaque." } },
+        { "cocina": "Garbanzo Nocturno", "diasAtras": 9, "hora": "23:30" },
+        { "cocina": "Arepa Sin Puerta", "diasAtras": 8, "hora": "07:30",
+          "resena": { "calificacion": 5, "comentario": "La arepa de carne desmechada es enorme y el suero costeño viene aparte. Cinco estrellas." } },
+        { "cocina": "Taquería Invisible", "diasAtras": 3, "hora": "18:30" },
+        { "cocina": "Ramen de Contrabando", "diasAtras": 2, "hora": "01:15" }
+      ]
+    },
+    {
+      "nombre": "Laura Méndez", "alias": "lula_bites", "correo": "laura.mendez@ghostkitchen.co", "clave": "Cazador2026",
+      "diasDesdeRegistro": 20,
+      "retos": [{ "titulo": "Doble o nada", "diasAtras": 1 }],
+      "cazas": [
+        { "cocina": "Dulce Penumbra", "diasAtras": 13, "hora": "14:30",
+          "resena": { "calificacion": 5, "comentario": "El tres leches en vaso llega frío y bien cerrado. Ya es mi postre de los viernes." } },
+        { "cocina": "Nori Clandestino", "diasAtras": 13, "hora": "17:20" },
+        { "cocina": "Bowl Secreto", "diasAtras": 7, "hora": "12:45",
+          "resena": { "calificacion": 4, "comentario": "Porción justa y salsas ricas. Faltó un poco más de quinoa." } },
+        { "cocina": "Wok del Callejón", "diasAtras": 7, "hora": "20:10" },
+        { "cocina": "La Olla Prohibida", "diasAtras": 1, "hora": "15:00" }
+      ]
+    },
+    {
+      "nombre": "Camilo Duarte", "alias": "mango_biche", "correo": "camilo.duarte@ghostkitchen.co", "clave": "Cazador2026",
+      "diasDesdeRegistro": 40,
+      "retos": [{ "titulo": "Gran cacería del mes", "diasAtras": 9 }],
+      "cazas": [
+        { "cocina": "Fritanga Fugitiva", "diasAtras": 25, "hora": "19:30",
+          "resena": { "calificacion": 3, "comentario": "La picada es generosa, pero el chicharrón llegó frío. Ojalá vuelva con la cocina nueva." } },
+        { "cocina": "Chivo de Medianoche", "diasAtras": 10, "hora": "21:15",
+          "resena": { "calificacion": 5, "comentario": "El chivo se deshace con el tenedor y la pepitoria es de las de antes." } },
+        { "cocina": "Pizza a Ciegas", "diasAtras": 5, "hora": "13:40" },
+        { "cocina": "Garbanzo Nocturno", "diasAtras": 1, "hora": "22:20",
+          "resena": { "calificacion": 4, "comentario": "Pasteles en su punto. El domiciliario llegó en veinte minutos a Caobos." } }
+      ]
+    },
+    {
+      "nombre": "Sara Contreras", "alias": "noctambula", "correo": "sara.contreras@ghostkitchen.co", "clave": "Cazador2026",
+      "diasDesdeRegistro": 15,
+      "retos": [],
+      "cazas": [
+        { "cocina": "Chivo de Medianoche", "diasAtras": 9, "hora": "02:30" },
+        { "cocina": "Smash Fantasma", "diasAtras": 8, "hora": "23:50" },
+        { "cocina": "Garbanzo Nocturno", "diasAtras": 3, "hora": "03:10",
+          "resena": { "calificacion": 5, "comentario": "A las tres de la mañana no hay nada mejor en la ciudad. Pedido por WhatsApp sin complicaciones." } },
+        { "cocina": "Taquería Invisible", "diasAtras": 2, "hora": "00:20",
+          "resena": { "calificacion": 4, "comentario": "La birria con consomé es espectacular. Las tortillas llegaron un poco blandas." } }
+      ]
+    }
+  ]
+}
