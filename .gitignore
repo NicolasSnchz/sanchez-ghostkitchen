@@ -1,0 +1,18 @@
+# Compilacion
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Evidencias temporales de las ejecuciones locales de los scripts
+/evidencias/
+app.log

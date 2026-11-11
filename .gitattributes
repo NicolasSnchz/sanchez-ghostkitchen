@@ -1,2 +1,7 @@
-# Auto detect text files and perform LF normalization
+# Normaliza finales de linea en texto y protege los binarios
 * text=auto
+*.sh text eol=lf
+*.png binary
+*.woff2 binary
+*.pdf binary
+*.docx binary
