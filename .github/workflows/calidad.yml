@@ -37,10 +37,19 @@ jobs:
         run: bash scripts/preparar-sonarqube.sh
 
       - name: Compilar, probar y analizar
-        run: >
-          mvn -B -ntp verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-          -Dsonar.host.url=http://localhost:9000 -Dsonar.token=${{ env.TOKEN_SONAR }}
-          -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600
+        run: |
+          mkdir -p evidencias
+          set -o pipefail
+          mvn -B -ntp verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.host.url=http://localhost:9000 -Dsonar.token=${{ env.TOKEN_SONAR }} \
+            -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600 2>&1 | tee evidencias/build.log
+
+      - name: Reunir reportes de pruebas, cobertura y PMD
+        if: always()
+        run: |
+          mkdir -p evidencias/reportes
+          cp -r target/surefire-reports target/failsafe-reports evidencias/reportes/ 2>/dev/null || true
+          cp target/site/jacoco/jacoco.csv target/pmd.xml target/cpd.xml evidencias/reportes/ 2>/dev/null || true
 
       - name: Exportar métricas
         if: always()
@@ -75,8 +84,10 @@ jobs:
 
       - name: Empaquetar y arrancar la aplicación
         run: |
-          mvn -B -ntp -DskipTests package
-          java -jar target/ghostkitchen-hunter-1.0.0.jar > app.log 2>&1 &
+          mkdir -p evidencias
+          set -o pipefail
+          mvn -B -ntp -DskipTests package 2>&1 | tee evidencias/empaquetado.log
+          java -jar target/ghostkitchen-hunter-1.0.0.jar > evidencias/app.log 2>&1 &
           timeout 120 bash -c 'until curl -s -o /dev/null localhost:8080/; do sleep 2; done'
 
       - name: Recorrer la aplicación con Playwright
@@ -91,6 +102,29 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: capturas-aplicacion
-          path: |
-            evidencias/
-            app.log
+          path: evidencias/
+
+  publicar:
+    name: Publicar evidencias en la rama evidencias-ci
+    needs: [sonarqube, capturas]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: evidencias
+
+      - name: Subir las evidencias de esta ejecución
+        env:
+          RESULTADO: "sonarqube=${{ needs.sonarqube.result }} capturas=${{ needs.capturas.result }}"
+        run: |
+          mkdir -p evidencias && cd evidencias
+          echo "$RESULTADO commit=$GITHUB_SHA" > estado.txt
+          git init -q -b evidencias-ci
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Evidencias de la ejecucion $GITHUB_RUN_NUMBER"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" evidencias-ci
