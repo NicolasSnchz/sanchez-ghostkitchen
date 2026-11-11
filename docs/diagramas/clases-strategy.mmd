@@ -1,0 +1,60 @@
+---
+title: Strategy (paquetes dominio.orden y aplicacion.catalogo)
+config:
+  class:
+    hideEmptyMembersBox: true
+---
+classDiagram
+    direction TB
+
+    class ServicioCatalogo {
+        -selector: SelectorCriterioOrden
+        +explorar(FiltroCocinas, Long) List~FichaCocina~
+        +detalle(Long, Long) DetalleCocina
+    }
+
+    class SelectorCriterioOrden["SelectorCriterioOrden [P]"] {
+        <<Strategy: contexto>>
+        -criterios: Map~TipoOrden, CriterioOrden~
+        +para(TipoOrden) CriterioOrden
+    }
+
+    class CriterioOrden["CriterioOrden [P]"] {
+        <<interface>>
+        +tipo() TipoOrden
+        +comparador() Comparator~FichaCocina~
+        +ordenar(Collection~FichaCocina~) List~FichaCocina~
+    }
+
+    class OrdenPorCercania["OrdenPorCercania [P]"] {
+        <<Strategy>>
+        +comparador() Comparator~FichaCocina~
+    }
+
+    class OrdenPorCalificacion["OrdenPorCalificacion [P]"] {
+        <<Strategy>>
+        +comparador() Comparator~FichaCocina~
+    }
+
+    class OrdenPorPopularidad["OrdenPorPopularidad [P]"] {
+        <<Strategy>>
+        +comparador() Comparator~FichaCocina~
+    }
+
+    class OrdenPorNovedad["OrdenPorNovedad [P]"] {
+        <<Strategy>>
+        +comparador() Comparator~FichaCocina~
+    }
+
+    CriterioOrden <|.. OrdenPorCercania
+    CriterioOrden <|.. OrdenPorCalificacion
+    CriterioOrden <|.. OrdenPorPopularidad
+    CriterioOrden <|.. OrdenPorNovedad
+    SelectorCriterioOrden o-- "4" CriterioOrden : criterios
+    ServicioCatalogo --> "1" SelectorCriterioOrden : selector
+    style CriterioOrden fill:#E4DCFF,stroke:#7B66D9,stroke-width:2px
+    style OrdenPorCercania fill:#E4DCFF,stroke:#7B66D9,stroke-width:2px
+    style OrdenPorCalificacion fill:#E4DCFF,stroke:#7B66D9,stroke-width:2px
+    style OrdenPorPopularidad fill:#E4DCFF,stroke:#7B66D9,stroke-width:2px
+    style OrdenPorNovedad fill:#E4DCFF,stroke:#7B66D9,stroke-width:2px
+    style SelectorCriterioOrden fill:#E4DCFF,stroke:#7B66D9,stroke-width:2px

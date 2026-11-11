@@ -1,0 +1,81 @@
+---
+title: Decorator con Template Method (paquete dominio.puntos)
+config:
+  class:
+    hideEmptyMembersBox: true
+---
+classDiagram
+    direction LR
+
+    class CalculadoraPuntos["CalculadoraPuntos [P]"] {
+        <<interface>>
+        +calcular(ContextoCaza) Puntaje
+    }
+
+    class PuntosBasePorRareza["PuntosBasePorRareza [P]"] {
+        <<Decorator: concreto>>
+        +calcular(ContextoCaza) Puntaje
+    }
+
+    class BonificacionPuntos["BonificacionPuntos [P]"] {
+        <<abstract>>
+        -envuelta: CalculadoraPuntos
+        +calcular(ContextoCaza) Puntaje
+        #aplica(ContextoCaza)* boolean
+        #bonificar(Puntaje, ContextoCaza)* Puntaje
+    }
+
+    class BonoPrimerCazador["BonoPrimerCazador [P]"] {
+        <<Decorator>>
+        +PUNTOS: int$
+        #aplica(ContextoCaza) boolean
+        #bonificar(Puntaje, ContextoCaza) Puntaje
+    }
+
+    class BonoRachaDiaria["BonoRachaDiaria [P]"] {
+        <<Decorator>>
+        +PUNTOS_POR_DIA: int$
+        +DIAS_MAXIMOS: int$
+        #aplica(ContextoCaza) boolean
+        #bonificar(Puntaje, ContextoCaza) Puntaje
+    }
+
+    class MultiplicadorHoraFantasma["MultiplicadorHoraFantasma [P]"] {
+        <<Decorator>>
+        +FACTOR: double$
+        #aplica(ContextoCaza) boolean
+        #bonificar(Puntaje, ContextoCaza) Puntaje
+    }
+
+    class ContextoCaza {
+        <<record>>
+        +rareza: Rareza
+        +primerCazador: boolean
+        +diasDeRacha: int
+        +hora: LocalTime
+    }
+
+    class Puntaje {
+        -total: int
+        -desglose: List~Linea~
+        +base(int)$ Puntaje
+        +mas(ConceptoPuntaje, int) Puntaje
+        +multiplicadoPor(ConceptoPuntaje, double) Puntaje
+        +total() int
+    }
+
+    CalculadoraPuntos <|.. PuntosBasePorRareza
+    CalculadoraPuntos <|.. BonificacionPuntos
+    BonificacionPuntos o-- "1" CalculadoraPuntos : envuelta
+    BonificacionPuntos <|-- BonoPrimerCazador
+    BonificacionPuntos <|-- BonoRachaDiaria
+    BonificacionPuntos <|-- MultiplicadorHoraFantasma
+    CalculadoraPuntos ..> ContextoCaza
+    CalculadoraPuntos ..> Puntaje
+
+    style CalculadoraPuntos fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style PuntosBasePorRareza fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style BonificacionPuntos fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style BonoPrimerCazador fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style BonoRachaDiaria fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style MultiplicadorHoraFantasma fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px

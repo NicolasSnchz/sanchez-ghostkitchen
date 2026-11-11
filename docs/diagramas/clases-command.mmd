@@ -1,0 +1,136 @@
+---
+title: Command y Factory Method (paquete aplicacion.acciones)
+config:
+  class:
+    hideEmptyMembersBox: true
+---
+classDiagram
+    direction TB
+
+    class CocinaControlador["CocinaControlador (cliente)"] {
+        -fabrica: FabricaComandos
+        -historial: HistorialAcciones
+        +cazar(Long, CuentaAutenticada, RedirectAttributes) String
+    }
+
+    class Comando["Comando [P]"] {
+        <<interface>>
+        +tipo() TipoAccion
+        +cazadorId() Long
+        +ejecutar() ResultadoComando
+        +deshacer() void
+    }
+
+    class DescubrirCocinaComando["DescubrirCocinaComando [P]"] {
+        <<Command>>
+        -receptor: RegistroCaza
+        -cazadorId: Long
+        -cocinaId: Long
+        +ejecutar() ResultadoComando
+        +deshacer() void
+    }
+
+    class PublicarResenaComando["PublicarResenaComando [P]"] {
+        <<Command>>
+        -receptor: RegistroResenas
+        -cazadorId: Long
+        -cocinaId: Long
+        -resena: NuevaResena
+        ~soloParaDeshacer(RegistroResenas, Long, Long)$ PublicarResenaComando
+        +ejecutar() ResultadoComando
+        +deshacer() void
+    }
+
+    class UnirseARetoComando["UnirseARetoComando [P]"] {
+        <<Command>>
+        -receptor: RegistroParticipaciones
+        -cazadorId: Long
+        -retoId: Long
+        +ejecutar() ResultadoComando
+        +deshacer() void
+    }
+
+    class HistorialAcciones["HistorialAcciones [P]"] {
+        <<Command: invocador>>
+        +VENTANA_PARA_DESHACER: Duration$
+        -acciones: RepositorioAcciones
+        -fabrica: FabricaComandos
+        -notificador: NotificadorProgreso
+        -reloj: Clock
+        +ejecutar(Comando) ResultadoAccion
+        +deshacerUltima(Long) ResultadoDeshacer
+        +accionDeshacible(Long) Optional~AccionDeshacible~
+        +recientes(Long) List~AccionVista~
+    }
+
+    class FabricaComandos["FabricaComandos [P]"] {
+        <<interface>>
+        +descubrirCocina(Long, Long) Comando
+        +publicarResena(Long, Long, NuevaResena) Comando
+        +unirseAReto(Long, Long) Comando
+        +paraDeshacer(AccionRegistrada) Comando
+    }
+
+    class FabricaComandosCazador["FabricaComandosCazador [P]"] {
+        <<Factory Method>>
+        -registroCaza: RegistroCaza
+        -registroResenas: RegistroResenas
+        -registroParticipaciones: RegistroParticipaciones
+        +paraDeshacer(AccionRegistrada) Comando
+    }
+
+    class RegistroCaza["RegistroCaza [P]"] {
+        <<Command: receptor>>
+        -calculadora: CalculadoraPuntos
+        -reloj: Clock
+        +descubrir(Long, Long) CazaRegistrada
+        +olvidar(Long, Long) void
+    }
+
+    class RegistroResenas["RegistroResenas [P]"] {
+        <<Command: receptor>>
+        +publicar(Long, Long, NuevaResena) String
+        +retirar(Long, Long) void
+    }
+
+    class RegistroParticipaciones["RegistroParticipaciones [P]"] {
+        <<Command: receptor>>
+        +inscribir(Long, Long) Reto
+        +retirar(Long, Long) void
+    }
+
+    class AccionRegistrada {
+        <<entity>>
+        -tipo: TipoAccion
+        -objetivoId: Long
+        -fechaHora: LocalDateTime
+        -deshecha: boolean
+    }
+
+    CocinaControlador ..> FabricaComandos : pide el comando
+    CocinaControlador ..> HistorialAcciones : lo entrega
+    Comando <|.. DescubrirCocinaComando
+    Comando <|.. PublicarResenaComando
+    Comando <|.. UnirseARetoComando
+    FabricaComandos <|.. FabricaComandosCazador
+    FabricaComandosCazador ..> DescubrirCocinaComando : crea
+    FabricaComandosCazador ..> PublicarResenaComando : crea
+    FabricaComandosCazador ..> UnirseARetoComando : crea
+    FabricaComandosCazador ..> AccionRegistrada : reconstruye desde
+    DescubrirCocinaComando --> "1" RegistroCaza : receptor
+    PublicarResenaComando --> "1" RegistroResenas : receptor
+    UnirseARetoComando --> "1" RegistroParticipaciones : receptor
+    HistorialAcciones ..> Comando : ejecutar() y deshacer()
+    HistorialAcciones --> "1" FabricaComandos : fabrica
+    HistorialAcciones ..> AccionRegistrada : guarda y marca
+
+    style Comando fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style DescubrirCocinaComando fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style PublicarResenaComando fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style UnirseARetoComando fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style HistorialAcciones fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style RegistroCaza fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style RegistroResenas fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style RegistroParticipaciones fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style FabricaComandos fill:#E4DCFF,stroke:#7B66D9,stroke-width:2px
+    style FabricaComandosCazador fill:#E4DCFF,stroke:#7B66D9,stroke-width:2px

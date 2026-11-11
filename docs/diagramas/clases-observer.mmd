@@ -1,0 +1,69 @@
+---
+title: Observer (paquetes aplicacion.progreso, aplicacion.retos y aplicacion.logros)
+config:
+  class:
+    hideEmptyMembersBox: true
+---
+classDiagram
+    direction TB
+
+    class HistorialAcciones["HistorialAcciones [P]"] {
+        <<Command: invocador>>
+        +VENTANA_PARA_DESHACER: Duration$
+        -acciones: RepositorioAcciones
+        -fabrica: FabricaComandos
+        -notificador: NotificadorProgreso
+        -reloj: Clock
+        +ejecutar(Comando) ResultadoAccion
+        +deshacerUltima(Long) ResultadoDeshacer
+        +accionDeshacible(Long) Optional~AccionDeshacible~
+        +recientes(Long) List~AccionVista~
+    }
+
+    class NotificadorProgreso["NotificadorProgreso [P]"] {
+        <<Observer: sujeto>>
+        -observadores: List~ObservadorProgreso~
+        -reloj: Clock
+        +notificar(Long, int) List~Novedad~
+    }
+
+    class ObservadorProgreso["ObservadorProgreso [P]"] {
+        <<interface>>
+        +alCambiarProgreso(EventoProgreso) List~Novedad~
+    }
+
+    class SincronizadorRetos["SincronizadorRetos @Order(1) [P]"] {
+        <<Observer>>
+        +alCambiarProgreso(EventoProgreso) List~Novedad~
+    }
+
+    class SincronizadorInsignias["SincronizadorInsignias @Order(2) [P]"] {
+        <<Observer>>
+        +alCambiarProgreso(EventoProgreso) List~Novedad~
+    }
+
+    class DetectorCambioNivel["DetectorCambioNivel @Order(3) [P]"] {
+        <<Observer>>
+        +alCambiarProgreso(EventoProgreso) List~Novedad~
+    }
+
+    class EventoProgreso {
+        <<record>>
+        +cazadorId: Long
+        +puntosAntes: int
+        +momento: LocalDateTime
+    }
+
+    HistorialAcciones --> "1" NotificadorProgreso : notificador
+    NotificadorProgreso o-- "1..*" ObservadorProgreso : observadores
+    ObservadorProgreso <|.. SincronizadorRetos
+    ObservadorProgreso <|.. SincronizadorInsignias
+    ObservadorProgreso <|.. DetectorCambioNivel
+    NotificadorProgreso ..> EventoProgreso : crea
+
+    style HistorialAcciones fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style NotificadorProgreso fill:#D5F2E3,stroke:#2F9E6B,stroke-width:2px
+    style ObservadorProgreso fill:#D5F2E3,stroke:#2F9E6B,stroke-width:2px
+    style SincronizadorRetos fill:#D5F2E3,stroke:#2F9E6B,stroke-width:2px
+    style SincronizadorInsignias fill:#D5F2E3,stroke:#2F9E6B,stroke-width:2px
+    style DetectorCambioNivel fill:#D5F2E3,stroke:#2F9E6B,stroke-width:2px

@@ -1,0 +1,100 @@
+---
+title: Cazas, reseñas, retos y logros (dominio.modelo)
+config:
+  class:
+    hideEmptyMembersBox: true
+---
+classDiagram
+    direction TB
+    class Cazador
+    class CocinaFantasma["CocinaFantasma [P]"]
+    class Descubrimiento {
+        <<entity>>
+        -id: Long
+        -fechaHora: LocalDateTime
+        -puntosObtenidos: int
+        +registrar(Cazador, CocinaFantasma, LocalDateTime, int)$ Descubrimiento
+        +resenar(int, String, LocalDateTime) Resena
+        +retirarResena() void
+        +ocurrioEnHoraFantasma() boolean
+    }
+    class Resena {
+        <<entity>>
+        -id: Long
+        -calificacion: int
+        -comentario: String
+        -fecha: LocalDateTime
+    }
+    class Reto {
+        <<entity>>
+        -id: Long
+        -titulo: String
+        -metaCocinas: int
+        -puntosRecompensa: int
+        -fechaInicio: LocalDate
+        -fechaFin: LocalDate
+        +estadoEn(LocalDate) EstadoReto
+        +cierre() LocalDateTime
+    }
+    class ParticipacionReto {
+        <<entity>>
+        -id: Long
+        -fechaUnion: LocalDateTime
+        -fechaCompletado: LocalDateTime
+        +actualizarAvance(long, LocalDateTime) boolean
+        +estaCompletada() boolean
+    }
+    class AccionRegistrada["AccionRegistrada [P]"] {
+        <<Command: historial>>
+        -id: Long
+        -tipo: TipoAccion
+        -objetivoId: Long
+        -detalle: String
+        -puntos: int
+        -fechaHora: LocalDateTime
+        -deshecha: boolean
+        +sePuedeDeshacer(LocalDateTime, Duration) boolean
+        +marcarDeshecha() void
+    }
+    class InsigniaObtenida {
+        <<entity>>
+        -id: Long
+        -tipo: TipoInsignia
+        -fechaObtencion: LocalDateTime
+    }
+    class ProgresoCazador {
+        <<record>>
+        +cocinasCazadas: int
+        +categoriasDistintas: int
+        +barriosDistintos: int
+        +cazasEnHoraFantasma: int
+        +cocinasLegendarias: int
+        +resenasPublicadas: int
+        +retosCompletados: int
+        +desde(Collection~Descubrimiento~, int)$ ProgresoCazador
+    }
+    class TipoInsignia {
+        <<enumeration>>
+        PRIMER_HALLAZGO
+        RASTREADOR
+        CAZADOR_EXPERTO
+        PALADAR_VARIADO
+        EXPLORADOR_DE_BARRIOS
+        NOCTAMBULO
+        LEYENDA_LOCAL
+        CRITICO_CULINARIO
+        RETADOR
+        +laMerece(ProgresoCazador) boolean
+    }
+    Descubrimiento "0..*" --> "1" Cazador : cazador
+    Descubrimiento "0..*" --> "1" CocinaFantasma : cocina
+    Descubrimiento *-- "0..1" Resena : resena
+    ParticipacionReto "0..*" --> "1" Cazador : cazador
+    ParticipacionReto "0..*" o-- "1" Reto : reto
+    AccionRegistrada "0..*" --> "1" Cazador : cazador
+    InsigniaObtenida "0..*" --> "1" Cazador : cazador
+    InsigniaObtenida --> "1" TipoInsignia : tipo
+    ProgresoCazador ..> Descubrimiento : resume
+    TipoInsignia ..> ProgresoCazador : evalua
+    style AccionRegistrada fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px
+    style CocinaFantasma fill:#FFE7B8,stroke:#D98B1C,stroke-width:2px

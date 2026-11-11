@@ -1,0 +1,30 @@
+---
+title: Deshacer la última acción (Command + Factory Method + Observer)
+---
+sequenceDiagram
+    autonumber
+    actor C as Cazador
+    participant W as AccionesControlador
+    participant H as HistorialAcciones
+    participant A as RepositorioAcciones
+    participant F as FabricaComandosCazador
+    participant K as Comando reconstruido
+    participant N as NotificadorProgreso
+
+    C->>W: POST /acciones/deshacer
+    W->>H: deshacerUltima(cazadorId)
+    H->>A: última acción no deshecha (pila LIFO)
+    A-->>H: AccionRegistrada
+    alt pasaron más de 15 minutos
+        H-->>W: ReglaNegocioException("accion.fuera-de-ventana")
+        W-->>C: vuelve a la página con el motivo
+    else dentro de la ventana
+        H->>F: paraDeshacer(accion)
+        F-->>H: comando del mismo tipo
+        H->>K: deshacer()
+        H->>H: accion.marcarDeshecha()
+        H->>N: notificar(cazadorId, puntosAntes)
+        Note over N: los observadores revierten retos,<br/>retiran insignias y bajan el nivel si toca
+        H-->>W: ResultadoDeshacer
+        W-->>C: vuelve a la página con la confirmación
+    end

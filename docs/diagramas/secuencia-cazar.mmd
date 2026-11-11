@@ -1,0 +1,35 @@
+---
+title: Cazar una cocina (Command + Decorator + Observer)
+---
+sequenceDiagram
+    autonumber
+    actor C as Cazador
+    participant W as CocinaControlador
+    participant F as FabricaComandosCazador
+    participant H as HistorialAcciones (invocador)
+    participant K as DescubrirCocinaComando
+    participant R as RegistroCaza (receptor)
+    participant P as Cadena de CalculadoraPuntos
+    participant N as NotificadorProgreso
+    participant O as Observadores (retos, insignias, nivel)
+
+    C->>W: POST /cocinas/{id}/cazar
+    W->>F: descubrirCocina(cazadorId, cocinaId)
+    F-->>W: comando
+    W->>H: ejecutar(comando)
+    H->>H: puntosAntes = progreso.puntosDe(cazadorId)
+    H->>K: ejecutar()
+    K->>R: descubrir(cazadorId, cocinaId)
+    R->>R: validar activa, repetida, horario y límite diario
+    R->>P: calcular(ContextoCaza)
+    Note over P: Hora fantasma envuelve a Racha,<br/>que envuelve a Primer cazador,<br/>que envuelve a la base por rareza
+    P-->>R: Puntaje con desglose
+    R-->>K: CazaRegistrada
+    K-->>H: ResultadoComando
+    H->>H: guardar AccionRegistrada (historial)
+    H->>N: notificar(cazadorId, puntosAntes)
+    N->>O: alCambiarProgreso(evento) en orden 1, 2, 3
+    O-->>N: novedades
+    N-->>H: novedades
+    H-->>W: ResultadoAccion
+    W-->>C: redirección a la ficha con la comanda y las novedades

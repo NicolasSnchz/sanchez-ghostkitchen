@@ -1,0 +1,54 @@
+---
+title: Facade (paquete aplicacion.panel)
+config:
+  class:
+    hideEmptyMembersBox: true
+---
+classDiagram
+    direction LR
+
+    class PerfilControlador {
+        -panel: PanelCazadorFacade
+        +perfil(CuentaAutenticada, Model) String
+    }
+
+    class PanelCazadorFacade["PanelCazadorFacade [P]"] {
+        <<Facade>>
+        -cuentas: ServicioCuentas
+        -progreso: ServicioProgreso
+        -insignias: ServicioInsignias
+        -retos: ServicioRetos
+        -historial: HistorialAcciones
+        +panelDe(Long) PanelCazador
+    }
+
+    class ServicioCuentas {
+        +cuentaPorId(Long) Optional~CuentaUsuario~
+    }
+
+    class ServicioProgreso {
+        +puntosDe(Long) int
+        +progresoDe(Long) ProgresoCazador
+        +cazasDe(Long) List~CazaVista~
+    }
+
+    class ServicioInsignias {
+        +insigniasDe(Long) List~InsigniaVista~
+    }
+
+    class ServicioRetos {
+        +inscritosDe(Long) List~RetoVista~
+    }
+
+    class HistorialAcciones {
+        +recientes(Long) List~AccionVista~
+        +accionDeshacible(Long) Optional~AccionDeshacible~
+    }
+
+    PerfilControlador --> "1" PanelCazadorFacade : panel
+    PanelCazadorFacade --> ServicioCuentas
+    PanelCazadorFacade --> ServicioProgreso
+    PanelCazadorFacade --> ServicioInsignias
+    PanelCazadorFacade --> ServicioRetos
+    PanelCazadorFacade --> HistorialAcciones
+    style PanelCazadorFacade fill:#D5F2E3,stroke:#2F9E6B,stroke-width:2px

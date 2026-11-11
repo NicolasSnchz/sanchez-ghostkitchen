@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Arquitectura de GhostKitchen Hunter</title>
+<style>
+  :root { --tinta:#191627; --borde:#4B4660; --papel:#F3EFE6; --ambar:#FFE7B8; --ambar-borde:#D98B1C; --azul:#065A82; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; font-family: "DejaVu Sans", Arial, sans-serif; color: var(--tinta); }
+  .lienzo { width: 1200px; padding: 28px 32px 32px; }
+  h1 { margin: 0 0 18px; font-size: 26px; color: var(--azul); }
+  .rejilla { display: grid; grid-template-columns: 1fr 230px; gap: 18px; }
+  .capas { display: grid; gap: 0; }
+  .capa { border: 2px solid var(--borde); border-radius: 10px; padding: 12px 16px 14px; background: #F7F8FB; }
+  .capa h2 { margin: 0 0 8px; font-size: 20px; }
+  .capa h2 small { font-weight: 400; color: #4B4660; font-size: 15px; }
+  .cajas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .caja { flex: 1 1 0; min-width: 180px; border: 1.5px solid var(--borde); border-radius: 6px; background: var(--papel); padding: 9px 11px; font-size: 15.5px; line-height: 1.35; }
+  .caja b { display: block; font-size: 16.5px; margin-bottom: 2px; }
+  .patron { background: var(--ambar); border-color: var(--ambar-borde); border-width: 2px; }
+  .flecha { position: relative; height: 38px; display: flex; justify-content: center; align-items: center; color: var(--borde); font-size: 14px; }
+  .flecha::before { content: ""; position: absolute; left: calc(50% - 1px); top: 2px; width: 2.5px; height: 26px; background: var(--borde); }
+  .flecha::after { content: ""; position: absolute; left: calc(50% - 7px); top: 26px; border: 7px solid transparent; border-top: 9px solid var(--borde); border-bottom: 0; }
+  .flecha span { position: absolute; left: calc(50% + 14px); }
+  .lateral { display: grid; gap: 18px; align-content: start; }
+  .transversal { border: 2px dashed var(--borde); border-radius: 10px; padding: 12px 14px; font-size: 15px; line-height: 1.4; background: #FBFAF7; }
+  .transversal h2 { margin: 0 0 6px; font-size: 18px; }
+  .cliente { display: flex; gap: 12px; margin-bottom: 0; }
+  .cliente .caja { text-align: center; background: #fff; border-radius: 30px; }
+  .bd { margin: 0 auto; width: 260px; text-align: center; border: 2px solid var(--borde); border-radius: 50% / 18%; padding: 16px 10px; background: var(--papel); font-size: 16px; }
+  .leyenda { margin-top: 16px; font-size: 14px; display: flex; gap: 18px; align-items: center; color: #4B4660; }
+  .leyenda span { display: inline-block; width: 18px; height: 14px; border: 2px solid var(--ambar-borde); background: var(--ambar); vertical-align: middle; margin-right: 6px; }
+</style>
+</head>
+<body>
+<div class="lienzo">
+  <h1>Arquitectura en capas con MVC (Spring Boot 3.5, Java 17)</h1>
+  <div class="rejilla">
+    <div class="capas">
+      <div class="cliente">
+        <div class="caja"><b>Navegador</b>HTML, CSS y JavaScript (mapa Leaflet)</div>
+        <div class="caja"><b>Cliente HTTP</b>JSON por GET</div>
+      </div>
+      <div class="flecha"><span>HTTP, pasa por Spring Security</span></div>
+      <div class="capa">
+        <h2>Presentación <small>presentacion.web, presentacion.api</small></h2>
+        <div class="cajas">
+          <div class="caja"><b>Controladores MVC</b>Cocina, Explorar, Perfil, Retos, Ranking, Cuenta, Admin. Validan formularios y redirigen (PRG).</div>
+          <div class="caja"><b>Vistas Thymeleaf</b>Reciben records de vista, nunca entidades (OSIV desactivado).</div>
+          <div class="caja"><b>API REST de lectura</b>/api/v1/cocinas y /api/v1/ranking con DTO y Problem Details.</div>
+        </div>
+      </div>
+      <div class="flecha"><span>llama a servicios y comandos</span></div>
+      <div class="capa">
+        <h2>Aplicación <small>aplicacion.*</small></h2>
+        <div class="cajas">
+          <div class="caja patron"><b>Command + Factory Method</b>HistorialAcciones, Comando, FabricaComandos y receptores.</div>
+          <div class="caja patron"><b>Observer</b>NotificadorProgreso y tres observadores ordenados.</div>
+          <div class="caja patron"><b>Facade y consultas</b>PanelCazadorFacade, ServicioCatalogo, ServicioRanking, ServicioRetos.</div>
+        </div>
+      </div>
+      <div class="flecha"><span>usa repositorios</span></div>
+      <div class="capa">
+        <h2>Persistencia <small>persistencia</small></h2>
+        <div class="cajas">
+          <div class="caja"><b>Repositorios Spring Data JPA</b>Consultas derivadas y JPQL con proyecciones record (puntos, actividad, calificaciones).</div>
+        </div>
+      </div>
+      <div class="flecha"><span>carga y guarda entidades</span></div>
+      <div class="capa">
+        <h2>Dominio <small>dominio.*, sin dependencias de Spring</small></h2>
+        <div class="cajas">
+          <div class="caja patron"><b>Modelo y Builder</b>CocinaFantasma con su Builder, Descubrimiento, Reto, Nivel, TipoInsignia.</div>
+          <div class="caja patron"><b>Decorator</b>Cadena de CalculadoraPuntos: base, primer cazador, racha y hora fantasma.</div>
+          <div class="caja patron"><b>Strategy</b>Cuatro CriterioOrden para el explorador.</div>
+        </div>
+      </div>
+      <div class="flecha"><span>JDBC</span></div>
+      <div class="bd"><b>H2 en memoria</b><br>esquema creado por Hibernate</div>
+    </div>
+    <div class="lateral">
+      <div class="transversal"><h2>Seguridad</h2>Spring Security: ingreso con formulario, roles CAZADOR y ADMIN, CSRF, CSP y contraseñas con BCrypt. Solo la usa la presentación.</div>
+      <div class="transversal"><h2>Configuración</h2>Raíz de composición: arma la cadena de decoradores, registra las cuatro estrategias y el reloj de Cúcuta. Carga los datos de demostración.</div>
+      <div class="transversal"><h2>Reglas verificadas</h2>ArchUnit comprueba en cada build el sentido de las dependencias, que el dominio no use Spring, que la presentación no use entidades y que no haya ciclos.</div>
+    </div>
+  </div>
+  <div class="leyenda"><div><span></span>Componente donde vive un patrón de diseño de la sección 4</div><div>Las flechas marcan el único sentido permitido de las dependencias; todas las capas pueden usar el dominio.</div></div>
+</div>
+</body>
+</html>
