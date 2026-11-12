@@ -1,0 +1,89 @@
+digraph paquetes {
+    graph [rankdir=TB, newrank=true, splines=spline, nodesep=0.3, ranksep=0.8, fontname="DejaVu Sans", fontsize=13, label="Dependencias entre paquetes calculadas de los imports reales.\nSe omiten las flechas hacia dominio.modelo y dominio.excepcion (las usan casi todos; ver Ca en cada nodo).", labelloc=t];
+    node [shape=tab, style=filled, fontname="DejaVu Sans", fontsize=12, color="#555555"];
+    edge [color="#55555599", arrowsize=0.7];
+    subgraph cluster_presentacion { label="presentacion"; style="rounded,dashed"; color="#999999";
+        "presentacion.api" [fillcolor="#d9e8f5", label="presentacion.api\nCa=0  Ce=6  I=1,00"];
+        "presentacion.comun" [fillcolor="#d9e8f5", label="presentacion.comun\nCa=2  Ce=3  I=0,60"];
+        "presentacion.web" [fillcolor="#d9e8f5", label="presentacion.web\nCa=0  Ce=14  I=1,00"];
+        "presentacion.web.formularios" [fillcolor="#d9e8f5", label="presentacion.web.formularios\nCa=1  Ce=5  I=0,83"];
+    }
+    subgraph cluster_seguridad { label="seguridad"; style="rounded,dashed"; color="#999999";
+        "seguridad" [fillcolor="#f5dede", label="seguridad\nCa=1  Ce=2  I=0,67"];
+    }
+    subgraph cluster_configuracion { label="configuracion"; style="rounded,dashed"; color="#999999";
+        "configuracion" [fillcolor="#ececec", label="configuracion\nCa=0  Ce=2  I=1,00"];
+        "configuracion.datos" [fillcolor="#ececec", label="configuracion.datos\nCa=0  Ce=5  I=1,00"];
+    }
+    subgraph cluster_aplicacion { label="aplicacion"; style="rounded,dashed"; color="#999999";
+        "aplicacion.acciones" [fillcolor="#fdebc8", label="aplicacion.acciones\nCa=3  Ce=6  I=0,67"];
+        "aplicacion.catalogo" [fillcolor="#fdebc8", label="aplicacion.catalogo\nCa=4  Ce=4  I=0,50"];
+        "aplicacion.cuentas" [fillcolor="#fdebc8", label="aplicacion.cuentas\nCa=4  Ce=3  I=0,43"];
+        "aplicacion.logros" [fillcolor="#fdebc8", label="aplicacion.logros\nCa=1  Ce=3  I=0,75"];
+        "aplicacion.panel" [fillcolor="#fdebc8", label="aplicacion.panel\nCa=1  Ce=7  I=0,88"];
+        "aplicacion.progreso" [fillcolor="#fdebc8", label="aplicacion.progreso\nCa=6  Ce=3  I=0,33"];
+        "aplicacion.ranking" [fillcolor="#fdebc8", label="aplicacion.ranking\nCa=2  Ce=3  I=0,60"];
+        "aplicacion.retos" [fillcolor="#fdebc8", label="aplicacion.retos\nCa=5  Ce=4  I=0,44"];
+    }
+    subgraph cluster_persistencia { label="persistencia"; style="rounded,dashed"; color="#999999";
+        "persistencia" [fillcolor="#e3dcf7", label="persistencia\nCa=8  Ce=1  I=0,11"];
+    }
+    subgraph cluster_dominio { label="dominio"; style="rounded,dashed"; color="#999999";
+        "dominio.excepcion" [fillcolor="#d8efdf", label="dominio.excepcion\nCa=8  Ce=0  I=0,00"];
+        "dominio.modelo" [fillcolor="#d8efdf", label="dominio.modelo\nCa=17  Ce=1  I=0,06"];
+        "dominio.orden" [fillcolor="#d8efdf", label="dominio.orden\nCa=5  Ce=1  I=0,17"];
+        "dominio.puntos" [fillcolor="#d8efdf", label="dominio.puntos\nCa=6  Ce=1  I=0,14"];
+    }
+    "aplicacion.acciones" -> "aplicacion.progreso";
+    "aplicacion.acciones" -> "aplicacion.retos";
+    "aplicacion.acciones" -> "dominio.puntos";
+    "aplicacion.acciones" -> "persistencia";
+    "aplicacion.catalogo" -> "dominio.orden";
+    "aplicacion.catalogo" -> "persistencia";
+    "aplicacion.cuentas" -> "persistencia";
+    "aplicacion.logros" -> "aplicacion.progreso";
+    "aplicacion.logros" -> "persistencia";
+    "aplicacion.panel" -> "aplicacion.acciones";
+    "aplicacion.panel" -> "aplicacion.cuentas";
+    "aplicacion.panel" -> "aplicacion.logros";
+    "aplicacion.panel" -> "aplicacion.progreso";
+    "aplicacion.panel" -> "aplicacion.retos";
+    "aplicacion.progreso" -> "dominio.puntos";
+    "aplicacion.progreso" -> "persistencia";
+    "aplicacion.ranking" -> "dominio.puntos";
+    "aplicacion.ranking" -> "persistencia";
+    "aplicacion.retos" -> "aplicacion.progreso";
+    "aplicacion.retos" -> "persistencia";
+    "configuracion" -> "dominio.orden";
+    "configuracion" -> "dominio.puntos";
+    "configuracion.datos" -> "aplicacion.progreso";
+    "configuracion.datos" -> "aplicacion.retos";
+    "configuracion.datos" -> "dominio.puntos";
+    "configuracion.datos" -> "persistencia";
+    "dominio.modelo" -> "dominio.excepcion";
+    "dominio.orden" -> "dominio.modelo";
+    "dominio.puntos" -> "dominio.modelo";
+    "presentacion.api" -> "aplicacion.catalogo";
+    "presentacion.api" -> "aplicacion.ranking";
+    "presentacion.api" -> "dominio.orden";
+    "presentacion.api" -> "presentacion.comun";
+    "presentacion.comun" -> "aplicacion.catalogo";
+    "presentacion.comun" -> "dominio.orden";
+    "presentacion.web" -> "aplicacion.acciones";
+    "presentacion.web" -> "aplicacion.catalogo";
+    "presentacion.web" -> "aplicacion.cuentas";
+    "presentacion.web" -> "aplicacion.panel";
+    "presentacion.web" -> "aplicacion.progreso";
+    "presentacion.web" -> "aplicacion.ranking";
+    "presentacion.web" -> "aplicacion.retos";
+    "presentacion.web" -> "dominio.orden";
+    "presentacion.web" -> "dominio.puntos";
+    "presentacion.web" -> "presentacion.comun";
+    "presentacion.web" -> "presentacion.web.formularios";
+    "presentacion.web" -> "seguridad";
+    "presentacion.web.formularios" -> "aplicacion.acciones";
+    "presentacion.web.formularios" -> "aplicacion.catalogo";
+    "presentacion.web.formularios" -> "aplicacion.cuentas";
+    "presentacion.web.formularios" -> "aplicacion.retos";
+    "seguridad" -> "aplicacion.cuentas";
+}

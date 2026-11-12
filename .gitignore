@@ -16,3 +16,4 @@ Thumbs.db
 # Evidencias temporales de las ejecuciones locales de los scripts
 /evidencias/
 app.log
+__pycache__/
