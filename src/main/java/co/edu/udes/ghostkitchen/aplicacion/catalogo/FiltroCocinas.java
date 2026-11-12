@@ -17,6 +17,12 @@ public record FiltroCocinas(String texto, CategoriaCocina categoria, boolean sol
 
     private static final Pattern MARCAS_DIACRITICAS = Pattern.compile("\\p{M}");
 
+    /**
+     * Normaliza los valores ausentes. En un constructor compacto, reasignar el parametro
+     * es la forma de fijar el campo del record; PMD 7.7 lo toma como asignacion sin uso
+     * (falso positivo de UnusedAssignment), por eso se suprime solo esa regla aqui.
+     */
+    @SuppressWarnings("PMD.UnusedAssignment")
     public FiltroCocinas {
         texto = texto == null ? "" : texto.strip();
         referencia = referencia == null ? Coordenada.CENTRO_DE_CUCUTA : referencia;
