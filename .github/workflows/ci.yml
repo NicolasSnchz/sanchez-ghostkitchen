@@ -30,6 +30,10 @@ jobs:
       - name: Compilar, probar y revisar umbrales (JaCoCo, PMD, CPD, ArchUnit)
         run: mvn -B -ntp verify
 
+      - name: Resumen de pruebas en la página de la ejecución
+        if: always()
+        run: python3 scripts/resumen-pruebas.py >> "$GITHUB_STEP_SUMMARY" || true
+
       - name: Resumir las pruebas que fallaron
         if: failure()
         run: |

@@ -50,18 +50,22 @@ jobs:
           mkdir -p evidencias/reportes
           cp -r target/surefire-reports target/failsafe-reports evidencias/reportes/ 2>/dev/null || true
           cp target/site/jacoco/jacoco.csv target/pmd.xml target/cpd.xml evidencias/reportes/ 2>/dev/null || true
+          cp -r target/site/jacoco evidencias/reportes/jacoco-html 2>/dev/null || true
+          python3 scripts/resumen-pruebas.py --html evidencias/reportes/pruebas.html > evidencias/resumen-pruebas.md || true
 
       - name: Exportar métricas
         if: always()
         run: bash scripts/exportar-metricas.sh
 
-      - name: Captura del panel de SonarQube
+      - name: Capturas de SonarQube, de las pruebas y de JaCoCo
         if: always()
         run: |
           mkdir -p /tmp/playwright && cd /tmp/playwright
           npm init -y >/dev/null && npm install --silent playwright@1.49.1
           npx playwright install --with-deps chromium
-          NODE_PATH=/tmp/playwright/node_modules node "$GITHUB_WORKSPACE/scripts/capturar-sonarqube.js"
+          cd "$GITHUB_WORKSPACE"
+          NODE_PATH=/tmp/playwright/node_modules node scripts/capturar-sonarqube.js
+          NODE_PATH=/tmp/playwright/node_modules node scripts/capturar-reportes.js
 
       - name: Guardar evidencias
         if: always()
@@ -95,7 +99,8 @@ jobs:
           mkdir -p /tmp/playwright && cd /tmp/playwright
           npm init -y >/dev/null && npm install --silent playwright@1.49.1
           npx playwright install --with-deps chromium
-          NODE_PATH=/tmp/playwright/node_modules node "$GITHUB_WORKSPACE/scripts/capturar-aplicacion.js"
+          cd "$GITHUB_WORKSPACE"
+          NODE_PATH=/tmp/playwright/node_modules node scripts/capturar-aplicacion.js
 
       - name: Guardar capturas
         if: always()
