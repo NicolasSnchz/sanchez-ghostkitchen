@@ -1055,6 +1055,7 @@ p {
 }
 
 .marcador {
+  display: block;
   width: 1.6rem;
   height: 1.6rem;
   border-radius: 50% 50% 50% 0.2rem;
@@ -1077,6 +1078,7 @@ p {
 }
 
 .marcador-yo {
+  display: block;
   width: 1.1rem;
   height: 1.1rem;
   border-radius: 50%;
@@ -1088,6 +1090,11 @@ p {
 .mapa.leaflet-container {
   font-family: var(--letra-texto);
   background: #1a1830;
+}
+
+/* Las teselas de OpenStreetMap son claras: se invierten para que el mapa combine con la noche */
+.mapa .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(200deg) brightness(0.8) contrast(0.9) saturate(0.5);
 }
 
 .mapa .leaflet-bar a {

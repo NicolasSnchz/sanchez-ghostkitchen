@@ -5,9 +5,9 @@
 (function () {
   "use strict";
 
-  var TESELAS = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-  var ATRIBUCION = "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> " +
-      "&copy; <a href=\"https://carto.com/attributions\">CARTO</a>";
+  // Teselas estandar de OpenStreetMap; el tono oscuro se logra con un filtro CSS (app.css).
+  var TESELAS = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+  var ATRIBUCION = "&copy; <a href=\"https://www.openstreetmap.org/copyright\">colaboradores de OpenStreetMap</a>";
 
   function icono(clases) {
     return L.divIcon({
@@ -56,7 +56,7 @@
     var referencia = [parseFloat(contenedor.getAttribute("data-ref-lat")),
       parseFloat(contenedor.getAttribute("data-ref-lng"))];
     var mapa = L.map(contenedor, { scrollWheelZoom: false }).setView(referencia, 14);
-    L.tileLayer(TESELAS, { subdomains: "abcd", maxZoom: 19, attribution: ATRIBUCION }).addTo(mapa);
+    L.tileLayer(TESELAS, { maxZoom: 19, attribution: ATRIBUCION }).addTo(mapa);
 
     var puntos = [];
     var cocinas = document.querySelectorAll("[data-cocina]");

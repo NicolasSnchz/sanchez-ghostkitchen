@@ -19,7 +19,7 @@ public class ConfiguracionSeguridad {
 
     static final String POLITICA_DE_CONTENIDO = String.join("; ",
             "default-src 'self'",
-            "img-src 'self' data: https://*.basemaps.cartocdn.com",
+            "img-src 'self' data: https://tile.openstreetmap.org",
             "style-src 'self' 'unsafe-inline'",
             "script-src 'self'",
             "font-src 'self'",

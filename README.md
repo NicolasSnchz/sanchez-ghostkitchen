@@ -342,4 +342,4 @@ scripts              SonarQube, capturas con Playwright, resumen de pruebas y c�
 
 ### Créditos
 
-Mapa con [Leaflet](https://leafletjs.com) y teselas de [CARTO](https://carto.com/attributions) sobre datos de [OpenStreetMap](https://www.openstreetmap.org/copyright). Fuentes Bricolage Grotesque, Figtree y DM Mono bajo licencia SIL Open Font (las licencias están en `src/main/resources/static/fuentes`).
+Mapa con [Leaflet](https://leafletjs.com) y teselas de [OpenStreetMap](https://www.openstreetmap.org/copyright), oscurecidas con un filtro CSS. Fuentes Bricolage Grotesque, Figtree y DM Mono bajo licencia SIL Open Font (las licencias están en `src/main/resources/static/fuentes`).
