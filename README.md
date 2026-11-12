@@ -7,6 +7,8 @@ Proyecto final de **Patrones de Diseño de Software** (UDES, Cúcuta). Nicolás 
 
 En Cúcuta hay muchas cocinas fantasma: negocios que cocinan en una casa o en un garaje, no tienen local ni letrero y solo venden por domicilio. Son difíciles de encontrar porque casi no aparecen en los mapas y todo depende del voz a voz. GhostKitchen Hunter las junta en un mapa y convierte el encontrarlas en un juego: cada cocina que descubres es una **caza** que te da puntos según su rareza, con bonos por ser el primero, por mantener la racha o por cazar de noche. Hay reseñas, retos, insignias, niveles y un ranking. Y como cualquiera se equivoca, la última acción se puede **deshacer** durante 15 minutos: ese es el patrón **Command** que me asignaron, y es el corazón del proyecto.
 
+[![Portada con el riel de comandas de las cazas recientes](docs/capturas/recortes/01-portada.png)](docs/capturas/01-portada.png)
+
 > Las cocinas del catálogo son inventadas, pero los barrios y sus coordenadas son reales.
 
 ## Contenido
@@ -58,6 +60,15 @@ Pruebas de mutación sobre el dominio (opcional): `mvn -Pmutacion test-compile o
 6. **Retos y ranking.** Retos vigentes con su avance y los próximos; ranking público donde los empates comparten puesto.
 7. **Administración.** Registrar, editar, activar y desactivar cocinas (una cocina con cazas no se borra, se desactiva) y crear retos.
 
+| | |
+|---|---|
+| [![Explorador con la lista y el mapa de Cúcuta](docs/capturas/recortes/02-explorar.png)](docs/capturas/02-explorar.png) | [![Panel del cazador con puntos, nivel, insignias y retos](docs/capturas/recortes/05-panel.png)](docs/capturas/05-panel.png) |
+| [![Después de deshacer: el reto vuelve a quedar pendiente y se retiran las insignias](docs/capturas/recortes/06b-deshacer.png)](docs/capturas/06b-deshacer.png) | [![Administración del catálogo de cocinas](docs/capturas/recortes/09-admin-cocinas.png)](docs/capturas/09-admin-cocinas.png) |
+
+![Portada y explorador en un celular](docs/capturas/recortes/movil.png)
+
+Todas las capturas son de la aplicación real: el flujo de calidad la arranca en GitHub Actions y la recorre con Playwright en cada envío ([`capturar-aplicacion.js`](https://github.com/NicolasSnchz/sanchez-ghostkitchen/blob/main/scripts/capturar-aplicacion.js)). Al hacer clic en una imagen se abre la página completa; las demás están en [`docs/capturas`](docs/capturas).
+
 ## Diseño propuesto
 
 Antes de programar cada parte me hice tres preguntas: qué requisito del juego estoy resolviendo, qué es exactamente lo que varía en él (el punto de variabilidad) y si puedo justificar el patrón en una sola oración. Esa última es la prueba de explicabilidad de la guía de la unidad 12: si no me cabe en una oración por qué uso un patrón, probablemente no lo necesito. Por eso hay partes del proyecto sin ningún patrón, como el ranking o el registro de cuentas: son consultas y formularios donde no varía nada.
@@ -78,6 +89,8 @@ Hay al menos un patrón de cada categoría, como pide el protocolo: Builder y Fa
 ## El patrón Command en detalle
 
 Es el patrón que me asignaron, así que quise que se notara en la interfaz y no solo en el código. Cada vez que el cazador caza, reseña o se une a un reto, aparece una barra con la última acción y un botón **Deshacer** con la cuenta regresiva de los 15 minutos.
+
+[![Después de cazar: la comanda con el desglose de puntos y la barra para deshacer](docs/capturas/recortes/04-cocina-cazada.png)](docs/capturas/04-cocina-cazada.png)
 
 Los roles del patrón en el código:
 
