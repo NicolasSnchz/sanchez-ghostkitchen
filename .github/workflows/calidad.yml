@@ -108,28 +108,3 @@ jobs:
         with:
           name: capturas-aplicacion
           path: evidencias/
-
-  publicar:
-    name: Publicar evidencias en la rama evidencias-ci
-    needs: [sonarqube, capturas]
-    if: always()
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: evidencias
-
-      - name: Subir las evidencias de esta ejecución
-        env:
-          RESULTADO: "sonarqube=${{ needs.sonarqube.result }} capturas=${{ needs.capturas.result }}"
-        run: |
-          mkdir -p evidencias && cd evidencias
-          echo "$RESULTADO commit=$GITHUB_SHA" > estado.txt
-          git init -q -b evidencias-ci
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -q -m "Evidencias de la ejecucion $GITHUB_RUN_NUMBER"
-          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" evidencias-ci

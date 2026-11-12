@@ -2,7 +2,7 @@ name: Historial de Actions como evidencia
 
 # Cuando termina una ejecucion de "Compilacion y pruebas", guarda el historial de ejecuciones,
 # el registro del build que fallo por la violacion intencional de ArchUnit y capturas de las
-# paginas publicas de Actions. Todo se publica en la rama evidencias-actions.
+# paginas publicas de Actions. Todo queda como artefacto de la ejecucion.
 on:
   workflow_run:
     workflows: ["Compilación y pruebas"]
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 concurrency:
@@ -61,12 +61,8 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           NODE_PATH=/tmp/playwright/node_modules node scripts/capturar-actions.js
 
-      - name: Publicar en la rama evidencias-actions
-        run: |
-          cd evidencias
-          git init -q -b evidencias-actions
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -q -m "Historial de GitHub Actions"
-          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" evidencias-actions
+      - name: Guardar el historial como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: historial-actions
+          path: evidencias/
