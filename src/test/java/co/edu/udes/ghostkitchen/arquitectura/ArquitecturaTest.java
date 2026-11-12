@@ -81,17 +81,19 @@ class ArquitecturaTest {
     static final ArchRule observadoresOrdenados = classes().that().implement(ObservadorProgreso.class)
             .should().beAnnotatedWith(Order.class);
 
+    /** ARQ-07: los controladores web y REST solo viven en la capa de presentacion. */
     @ArchTest
     static final ArchRule controladoresEnPresentacion = classes().that().areAnnotatedWith(Controller.class)
             .or().areAnnotatedWith(RestController.class)
             .should().resideInAPackage("..presentacion..");
 
+    /** ARQ-08: los repositorios viven en persistencia y se nombran Repositorio*. */
     @ArchTest
     static final ArchRule repositoriosEnPersistencia = classes().that().areAssignableTo(Repository.class)
             .should().resideInAPackage("..persistencia..")
             .andShould().haveSimpleNameStartingWith("Repositorio");
 
-    /** ARQ-07: inyeccion por constructor; nada de @Autowired en atributos. */
+    /** ARQ-09: inyeccion por constructor; nada de @Autowired en atributos. */
     @ArchTest
     static final ArchRule sinInyeccionEnAtributos = noFields().should().beAnnotatedWith(Autowired.class);
 }

@@ -12,6 +12,7 @@ import co.edu.udes.ghostkitchen.dominio.modelo.Administrador;
 import co.edu.udes.ghostkitchen.dominio.modelo.Cazador;
 import co.edu.udes.ghostkitchen.dominio.modelo.CocinaFantasma;
 import co.edu.udes.ghostkitchen.dominio.modelo.Reto;
+import co.edu.udes.ghostkitchen.dominio.orden.TipoOrden;
 import co.edu.udes.ghostkitchen.dominio.puntos.ConceptoPuntaje;
 import co.edu.udes.ghostkitchen.dominio.puntos.Puntaje;
 import co.edu.udes.ghostkitchen.presentacion.web.Comanda;
@@ -20,6 +21,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * Renderiza cada pagina con datos reales. Si una plantilla tiene una expresion
@@ -79,6 +82,16 @@ class VistasIT extends PruebaIntegracion {
         mvc.perform(get("/registro")).andExpect(status().isOk());
         mvc.perform(get("/cocinas/{id}", 999_999)).andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("Esta cocina se esfum")));
+    }
+
+    /** Si a un valor de TipoOrden le faltara su estrategia registrada en Spring, esta prueba lo detecta. */
+    @ParameterizedTest(name = "orden {0}")
+    @EnumSource(TipoOrden.class)
+    @DisplayName("PI-009 El explorador funciona con cada criterio de orden registrado en Spring")
+    void explorador_funcionaConCadaCriterioDeOrden(TipoOrden orden) throws Exception {
+        mvc.perform(get("/explorar").param("orden", orden.name()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Pizza a Ciegas")));
     }
 
     @Test

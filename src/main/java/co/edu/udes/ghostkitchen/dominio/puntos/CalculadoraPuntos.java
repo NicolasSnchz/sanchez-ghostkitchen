@@ -2,7 +2,8 @@ package co.edu.udes.ghostkitchen.dominio.puntos;
 
 /**
  * Componente del patron Decorator. Tanto el calculo base como cada bonificacion
- * cumplen este mismo contrato, por eso se pueden apilar en cualquier orden.
+ * cumplen este mismo contrato, por eso se pueden apilar unas sobre otras. El
+ * orden de la pila si cambia el resultado y lo fija ConfiguracionDominio.
  */
 public interface CalculadoraPuntos {
 

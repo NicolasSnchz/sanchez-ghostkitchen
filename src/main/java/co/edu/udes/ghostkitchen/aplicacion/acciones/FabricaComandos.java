@@ -8,10 +8,13 @@ import co.edu.udes.ghostkitchen.dominio.modelo.AccionRegistrada;
  */
 public interface FabricaComandos {
 
+    /** Crea el comando que registra la caza de una cocina por parte del cazador. */
     Comando descubrirCocina(Long cazadorId, Long cocinaId);
 
+    /** Crea el comando que publica la resena del cazador sobre una cocina que ya cazo. */
     Comando publicarResena(Long cazadorId, Long cocinaId, NuevaResena resena);
 
+    /** Crea el comando que inscribe al cazador en un reto vigente. */
     Comando unirseAReto(Long cazadorId, Long retoId);
 
     /**

@@ -40,7 +40,6 @@
         <cobertura.minima.dominio>0.90</cobertura.minima.dominio>
 
         <!-- Cobertura: se excluye solo codigo sin logica propia (arranque y datos de demostracion) -->
-        <cobertura.exclusiones>**/GhostKitchenHunterApplication.class,**/configuracion/datos/**</cobertura.exclusiones>
 
         <!-- Analisis con SonarQube / SonarCloud (mvn sonar:sonar) -->
         <sonar.projectKey>NicolasSnchz_sanchez-ghostkitchen</sonar.projectKey>
@@ -172,7 +171,11 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
                 <configuration>
-                    <excludes>${cobertura.exclusiones}</excludes>
+                    <!-- Fuera de la cobertura: la clase main y el cargador de datos demo (tiene su propia prueba, PI-011). -->
+                    <excludes>
+                        <exclude>**/GhostKitchenHunterApplication.class</exclude>
+                        <exclude>**/configuracion/datos/**</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
