@@ -1,0 +1,72 @@
+name: Historial de Actions como evidencia
+
+# Cuando termina una ejecucion de "Compilacion y pruebas", guarda el historial de ejecuciones,
+# el registro del build que fallo por la violacion intencional de ArchUnit y capturas de las
+# paginas publicas de Actions. Todo se publica en la rama evidencias-actions.
+on:
+  workflow_run:
+    workflows: ["Compilación y pruebas"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: historial-actions
+  cancel-in-progress: true
+
+jobs:
+  capturar:
+    name: Capturar el historial de GitHub Actions
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Esperar a que no queden ejecuciones de CI en curso
+        run: |
+          for intento in $(seq 1 40); do
+            pendientes=$(gh run list -R "$REPO" --workflow ci.yml --limit 20 --json status \
+              --jq '[.[] | select(.status != "completed")] | length')
+            [ "$pendientes" = "0" ] && break
+            sleep 30
+          done
+
+      - name: Guardar el historial y el registro del build fallido
+        run: |
+          mkdir -p evidencias
+          gh run list -R "$REPO" --workflow ci.yml --limit 30 \
+            --json databaseId,headBranch,headSha,displayTitle,event,conclusion,createdAt,url > evidencias/historial-ci.json
+          FALLIDO=$(jq -r '[.[] | select(.headBranch | startswith("demo/")) | select(.conclusion == "failure")][0].databaseId // empty' evidencias/historial-ci.json)
+          VERDE=$(jq -r '[.[] | select(.headBranch == "main") | select(.conclusion == "success")][0].databaseId // empty' evidencias/historial-ci.json)
+          echo "FALLIDO=$FALLIDO" >> "$GITHUB_ENV"
+          echo "VERDE=$VERDE" >> "$GITHUB_ENV"
+          if [ -n "$FALLIDO" ]; then
+            gh run view "$FALLIDO" -R "$REPO" --log-failed > evidencias/log-build-fallido.txt || true
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Capturar las paginas de Actions
+        run: |
+          mkdir -p /tmp/playwright && cd /tmp/playwright
+          npm init -y >/dev/null && npm install --silent playwright@1.49.1
+          npx playwright install --with-deps chromium
+          cd "$GITHUB_WORKSPACE"
+          NODE_PATH=/tmp/playwright/node_modules node scripts/capturar-actions.js
+
+      - name: Publicar en la rama evidencias-actions
+        run: |
+          cd evidencias
+          git init -q -b evidencias-actions
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Historial de GitHub Actions"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" evidencias-actions

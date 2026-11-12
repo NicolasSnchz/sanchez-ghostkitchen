@@ -2,7 +2,8 @@ name: Compilación y pruebas
 
 on:
   push:
-    branches: [main]
+    # demo/** existe solo para la evidencia de la violacion intencional de ArchUnit (README, Arquitectura).
+    branches: [main, 'demo/**']
   pull_request:
   workflow_dispatch:
 
@@ -28,6 +29,22 @@ jobs:
 
       - name: Compilar, probar y revisar umbrales (JaCoCo, PMD, CPD, ArchUnit)
         run: mvn -B -ntp verify
+
+      - name: Resumir las pruebas que fallaron
+        if: failure()
+        run: |
+          {
+            echo "## Pruebas que fallaron (JDK ${{ matrix.java }})"
+            echo
+            for reporte in target/surefire-reports/*.txt target/failsafe-reports/*.txt; do
+              [ -f "$reporte" ] || continue
+              if grep -qE "<<< (FAILURE|ERROR)" "$reporte"; then
+                echo '```text'
+                head -n 60 "$reporte"
+                echo '```'
+              fi
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Guardar reportes
         if: always() && matrix.java == '17'
