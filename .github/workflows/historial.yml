@@ -25,7 +25,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Esperar a que no queden ejecuciones de CI en curso
         run: |
