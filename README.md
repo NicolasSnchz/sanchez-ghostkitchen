@@ -284,6 +284,20 @@ El flujo [Calidad con SonarQube y capturas](.github/workflows/calidad.yml) levan
 5. **Criterio de pruebas.** Cada caso de uso tiene al menos una prueba que lo recorre y cada patrón una prueba de su colaboración (ver la [matriz de trazabilidad](docs/trazabilidad.md)). Los dobles se eligen por lo que se quiere verificar, no por cumplir.
 6. **Una puerta de calidad realista.** La primera versión de la puerta exigía cero *code smells*, y la quité: cualquier detalle menor rompería el build y la tentación sería marcarlo como falso positivo. La puerta exige en cambio lo que sí se comprometió en el protocolo: cobertura ≥ 70 %, duplicación ≤ 3 %, deuda ≤ 30 min por KLOC, mantenibilidad, confiabilidad y seguridad en A.
 
+### Code smells del plan de refactorización y dónde quedaron
+
+En la sección 7.2 del protocolo anticipé siete *code smells* antes de programar. Esta tabla dice qué técnica del catálogo de Fowler usé con cada uno, dónde se ve en el código y qué control evita que vuelva a aparecer:
+
+| Code smell | Técnica de Fowler | Dónde quedó resuelto | Qué lo vigila |
+|---|---|---|---|
+| Long Method | Extract Method | `RegistroCaza.descubrir()` delega en `validar()` y `diasDeRacha()` ([línea 42](https://github.com/NicolasSnchz/sanchez-ghostkitchen/blob/main/src/main/java/co/edu/udes/ghostkitchen/aplicacion/acciones/RegistroCaza.java#L42)) | PMD: complejidad ciclomática ≤ 10 y cognitiva ≤ 15; SonarQube: `java:S1541` y `java:S3776` |
+| Switch Statements | Replace Conditional with Polymorphism | Los bonos son decoradores y los órdenes son estrategias; no hay un `if` por bono ni por orden ([línea 10](https://github.com/NicolasSnchz/sanchez-ghostkitchen/blob/main/src/main/java/co/edu/udes/ghostkitchen/dominio/puntos/BonificacionPuntos.java#L10)) | Las mismas reglas de complejidad |
+| Long Parameter List | Introduce Parameter Object y Builder | `CocinaFantasma.Builder` y el record `DatosCocina` ([línea 11](https://github.com/NicolasSnchz/sanchez-ghostkitchen/blob/main/src/main/java/co/edu/udes/ghostkitchen/aplicacion/catalogo/DatosCocina.java#L11)) | PMD: `ExcessiveParameterList` |
+| Data Clumps | Introduce Parameter Object | Latitud y longitud viajan como `Coordenada` y con el barrio como `Ubicacion`; la distancia se calcula en un solo lugar ([línea 23](https://github.com/NicolasSnchz/sanchez-ghostkitchen/blob/main/src/main/java/co/edu/udes/ghostkitchen/dominio/modelo/Coordenada.java#L23)) | CPD y la duplicación de SonarQube (≤ 3 %) |
+| Duplicated Code | Extract Class | La web y la API leen los filtros con la misma clase, `ParametrosBusqueda` ([línea 25](https://github.com/NicolasSnchz/sanchez-ghostkitchen/blob/main/src/main/java/co/edu/udes/ghostkitchen/presentacion/comun/ParametrosBusqueda.java#L25)) | CPD hace fallar el build |
+| Feature Envy | Move Method | En vez de que el ranking calcule los puntos con datos de reseñas y retos, la fórmula vive en el dominio, `PuntosCazador.total()`, y la usan el ranking y el panel ([línea 14](https://github.com/NicolasSnchz/sanchez-ghostkitchen/blob/main/src/main/java/co/edu/udes/ghostkitchen/dominio/puntos/PuntosCazador.java#L14)) | `DatosDemoIT` compara ranking y panel |
+| Large Class | Extract Class (si hace falta) | `CocinaControlador` tiene hoy tres acciones y 83 líneas, así que no lo partí: hacerlo ahora sería anticiparme (YAGNI). Si crece, las reseñas se van a su propio controlador. | PMD: `GodClass` |
+
 ## Inconsistencias del enunciado y cómo las resolví
 
 Al leer el protocolo con la rúbrica al lado encontré algunos puntos que se contradicen o que no se pueden cumplir tal como están escritos. No los ignoré; esto es lo que hice con cada uno:
@@ -310,19 +324,20 @@ src/main/java/co/edu/udes/ghostkitchen
 src/main/resources   plantillas Thymeleaf, CSS, JS, fuentes, messages.properties, datos-demo.json
 src/test/java        pruebas unitarias (*Test), de integración (*IT) y de arquitectura
 config/pmd           reglas de complejidad y duplicación que hacen fallar el build
-docs                 ADR, diagramas, capturas, evidencias de métricas y el protocolo del previo final
-scripts              preparación de SonarQube y capturas con Playwright para GitHub Actions
+docs                 ADR, diagramas, acoplamiento entre paquetes, trazabilidad y el protocolo del previo final
+scripts              SonarQube, capturas con Playwright, resumen de pruebas y cálculo de acoplamiento
 ```
 
 ## ADR y otros documentos
 
-- [ADR-001 Capas con MVC, sin hexagonal](docs/adr/ADR-001-capas-y-mvc.md)
-- [ADR-002 Command con historial y deshacer en 15 minutos](docs/adr/ADR-002-command-con-historial.md)
-- [ADR-003 Anotaciones de JPA en el dominio](docs/adr/ADR-003-anotaciones-jpa-en-el-dominio.md)
-- [ADR-004 Puntos derivados](docs/adr/ADR-004-puntos-derivados.md)
-- [ADR-005 Decorator para los bonos](docs/adr/ADR-005-decorator-para-los-bonos.md)
+- [ADR-001 Capas simples con MVC, sin puertos hexagonales](docs/adr/ADR-001-capas-y-mvc.md)
+- [ADR-002 Command con historial persistido, deshacer en pila y ventana de 15 minutos](docs/adr/ADR-002-command-con-historial.md)
+- [ADR-003 Anotaciones de JPA en el dominio, sin Spring](docs/adr/ADR-003-anotaciones-jpa-en-el-dominio.md)
+- [ADR-004 El total de puntos y el nivel se derivan](docs/adr/ADR-004-puntos-derivados.md)
+- [ADR-005 Decorator con Template Method para los bonos](docs/adr/ADR-005-decorator-para-los-bonos.md)
 - [ADR-006 Observer propio y ordenado](docs/adr/ADR-006-observer-propio.md)
 - [Matriz de trazabilidad](docs/trazabilidad.md): caso de uso, patrón, clases y pruebas
+- [Acoplamiento entre paquetes](docs/acoplamiento-paquetes.md): Ca, Ce, inestabilidad y distancia de cada paquete
 - [Protocolo del previo final en PDF](docs/protocolo/Protocolo_PrevioFinal_GhostKitchenHunter.pdf) y [en Word](docs/protocolo/Protocolo_PrevioFinal_GhostKitchenHunter.docx)
 
 ### Créditos
