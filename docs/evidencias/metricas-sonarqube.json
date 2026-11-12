@@ -1,0 +1,21 @@
+{
+  "ncloc": "4745",
+  "lines": "6450",
+  "classes": "159",
+  "functions": "530",
+  "coverage": "93.8",
+  "line_coverage": "96.1",
+  "branch_coverage": "84.8",
+  "duplicated_lines_density": "0.0",
+  "complexity": "693",
+  "cognitive_complexity": "177",
+  "sqale_index": "0",
+  "sqale_debt_ratio": "0.0",
+  "sqale_rating": "1.0",
+  "code_smells": "0",
+  "bugs": "0",
+  "vulnerabilities": "0",
+  "security_hotspots": "0",
+  "reliability_rating": "1.0",
+  "security_rating": "1.0"
+}

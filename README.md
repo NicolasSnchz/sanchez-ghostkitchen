@@ -216,9 +216,25 @@ El diagrama y las métricas salen de los `import` reales con [`scripts/acoplamie
 
 ### La prueba de que ArchUnit sí detiene el build
 
-Una regla de arquitectura que nunca ha fallado no demuestra mucho, así que la rompí a propósito. En la rama [`demo/violacion-arquitectura`](https://github.com/NicolasSnchz/sanchez-ghostkitchen/tree/demo/violacion-arquitectura) el commit *«violación intencional»* hace que `PortadaControlador` use `RepositorioCocinas` directamente, saltándose la capa de aplicación, que es el atajo más tentador cuando uno tiene afán. GitHub Actions corre las pruebas en esa rama y el build falla en `ArquitecturaTest` por la regla ARQ-01. En `main` está el mismo commit seguido de su revert, y ahí el build vuelve a verde.
+Una regla de arquitectura que nunca ha fallado no demuestra mucho, así que la rompí a propósito. En la rama [`demo/violacion-arquitectura`](https://github.com/NicolasSnchz/sanchez-ghostkitchen/tree/demo/violacion-arquitectura) el commit *«violación intencional»* hace que `PortadaControlador` use `RepositorioCocinas` directamente, saltándose la capa de aplicación, que es el atajo más tentador cuando uno tiene afán. GitHub Actions corrió las pruebas en esa rama y el build falló en `ArquitecturaTest` por la regla ARQ-01, en las dos versiones de Java. En `main` está el mismo commit seguido de su revert, y ahí el build está en verde.
 
-El historial queda a la vista en GitHub Actions: [ejecuciones en la rama de la violación](https://github.com/NicolasSnchz/sanchez-ghostkitchen/actions/workflows/ci.yml?query=branch%3Ademo%2Fviolacion-arquitectura) y [ejecuciones en `main`](https://github.com/NicolasSnchz/sanchez-ghostkitchen/actions/workflows/ci.yml?query=branch%3Amain). El flujo [`historial.yml`](.github/workflows/historial.yml) guarda además el registro del build fallido y capturas de esas páginas.
+| Build fallido por la violación | Historial: rojo en la rama demo, verde en `main` |
+|---|---|
+| [![Ejecución fallida en la rama demo](docs/evidencias/actions-build-fallido.png)](docs/evidencias/actions-build-fallido.png) | [![Historial de ejecuciones de GitHub Actions](docs/evidencias/actions-historial.png)](docs/evidencias/actions-historial.png) |
+
+Lo que reportó ArchUnit en el build fallido (regla ARQ-01, las tres formas en que el controlador tocó el repositorio), copiado del registro que guarda [`historial.yml`](.github/workflows/historial.yml):
+
+```text
+ArquitecturaTest.capasRespetanSusDependencias Architecture Violation [Priority: MEDIUM]
+Rule 'Layered architecture considering only dependencies in layers ...' was violated (3 times):
+Constructor <...presentacion.web.PortadaControlador.<init>(...ServicioPortada, ...persistencia.RepositorioCocinas)>
+  has parameter of type <...persistencia.RepositorioCocinas> in (PortadaControlador.java:0)
+Field <...presentacion.web.PortadaControlador.cocinas> has type <...persistencia.RepositorioCocinas> in (PortadaControlador.java:0)
+Method <...presentacion.web.PortadaControlador.inicio(...Model)> calls method
+  <...persistencia.RepositorioCocinas.countByActivaTrue()> in (PortadaControlador.java:26)
+```
+
+Las ejecuciones se pueden ver en vivo: [rama de la violación](https://github.com/NicolasSnchz/sanchez-ghostkitchen/actions/workflows/ci.yml?query=branch%3Ademo%2Fviolacion-arquitectura) y [`main`](https://github.com/NicolasSnchz/sanchez-ghostkitchen/actions/workflows/ci.yml?query=branch%3Amain).
 
 ## Qué se descartó y por qué
 
@@ -273,20 +289,29 @@ Usé cada tipo de doble de prueba donde tenía sentido, no por cumplir:
 
 ## Calidad y métricas
 
-Los umbrales se fijaron antes de implementar (sección 7 del protocolo) y el build falla si no se cumplen:
+Los umbrales se fijaron antes de implementar (sección 7 del protocolo). Los valores medidos salen del último análisis en GitHub Actions sobre `main`; los archivos originales están en [`docs/evidencias`](docs/evidencias).
 
-| Métrica | Herramienta | Umbral |
-|---|---|---|
-| Cobertura de líneas y ramas del proyecto | JaCoCo y SonarQube | ≥ 70 % |
-| Cobertura de líneas del dominio | JaCoCo | ≥ 90 % |
-| Complejidad ciclomática por método | PMD y SonarQube | ≤ 10 |
-| Complejidad cognitiva por método | PMD y SonarQube | ≤ 15 |
-| Deuda técnica | SonarQube | ≤ 30 min por KLOC y mantenibilidad A |
-| Duplicación | CPD y SonarQube | ≤ 3 % |
-| Bugs y vulnerabilidades | SonarQube | 0 |
-| Violaciones de arquitectura | ArchUnit | 0 |
+| Métrica | Herramienta | Umbral | Medido |
+|---|---|---|---|
+| Cobertura del proyecto | JaCoCo y SonarQube | ≥ 70 % | **93,8 %** (96,1 % de líneas y 84,8 % de ramas) |
+| Cobertura de líneas del dominio | JaCoCo | ≥ 90 % por paquete | **98,0 a 100 %** (`modelo` 98,0; `puntos`, `orden` y `excepcion` 100) |
+| Complejidad ciclomática por método | PMD y SonarQube (`java:S1541`) | ≤ 10 | **0 métodos** por encima |
+| Complejidad cognitiva por método | PMD y SonarQube (`java:S3776`) | ≤ 15 | **0 métodos** por encima |
+| Deuda técnica | SonarQube | ≤ 30 min por KLOC y mantenibilidad A | **0 min** en 4,7 KLOC, mantenibilidad A |
+| Duplicación | CPD y SonarQube | ≤ 3 % | **0,0 %** |
+| Bugs y vulnerabilidades | SonarQube | 0 | **0 y 0** (confiabilidad y seguridad A) |
+| Violaciones de arquitectura | ArchUnit | 0 | **0** en 9 reglas |
+| Pruebas | Surefire y Failsafe | todas en verde | **136 de 136** ([detalle](docs/evidencias/resumen-pruebas.md)) |
 
-El flujo [Calidad con SonarQube y capturas](.github/workflows/calidad.yml) levanta SonarQube Community en un contenedor de GitHub Actions, crea una puerta de calidad con estos umbrales, analiza el proyecto y guarda las métricas medidas como artefacto.
+No llegué ahí de una vez. El primer análisis encontró 2 bugs y 15 *code smells* (por ejemplo, una duración calculada con fechas sin zona horaria y literales repetidos) y la puerta de calidad falló; los corregí y el análisis siguiente quedó limpio. El historial de commits lo muestra.
+
+| SonarQube: puerta de calidad aprobada | JaCoCo: cobertura por paquete |
+|---|---|
+| [![Resumen de SonarQube con la puerta de calidad aprobada](docs/evidencias/sonarqube-resumen.png)](docs/evidencias/sonarqube-resumen.png) | [![Reporte HTML de JaCoCo](docs/evidencias/jacoco-resumen.png)](docs/evidencias/jacoco-resumen.png) |
+
+[![Resumen de las 136 pruebas en verde](docs/evidencias/pruebas-en-verde.png)](docs/evidencias/pruebas-en-verde.png)
+
+El flujo [Calidad con SonarQube y capturas](.github/workflows/calidad.yml) levanta SonarQube Community en un contenedor de GitHub Actions, le crea el perfil y la puerta de calidad con estos umbrales, analiza el proyecto y guarda las métricas, los reportes y estas capturas.
 
 ### Decisiones de calidad
 
