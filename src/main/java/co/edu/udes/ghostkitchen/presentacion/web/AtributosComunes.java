@@ -6,7 +6,7 @@ import co.edu.udes.ghostkitchen.seguridad.CuentaAutenticada;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Clock;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -52,6 +52,7 @@ public class AtributosComunes {
     }
 
     private long segundosHasta(AccionDeshacible accion) {
-        return Math.max(0, Duration.between(LocalDateTime.now(reloj), accion.disponibleHasta()).toSeconds());
+        Instant limite = accion.disponibleHasta().atZone(reloj.getZone()).toInstant();
+        return Math.max(0, Duration.between(reloj.instant(), limite).toSeconds());
     }
 }

@@ -10,7 +10,7 @@ import co.edu.udes.ghostkitchen.dominio.modelo.ProgresoCazador;
 import java.util.List;
 import java.util.Optional;
 
-/** Todo lo que muestra el perfil del cazador, reunido por la fachada en un solo objeto. */
+/** Lo que muestra el perfil del cazador, reunido por la fachada en un solo objeto. */
 public record PanelCazador(
         String alias,
         String nombre,

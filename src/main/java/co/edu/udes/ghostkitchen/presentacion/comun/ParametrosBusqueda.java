@@ -8,7 +8,7 @@ import java.util.Locale;
 
 /**
  * Parametros de busqueda que llegan por la URL, compartidos por la vista del
- * explorador y por la API. Todo es opcional y tolerante: un valor que no se
+ * explorador y por la API. Cada valor es opcional y tolerante: un valor que no se
  * entiende se ignora en lugar de romper la pagina.
  */
 public class ParametrosBusqueda {

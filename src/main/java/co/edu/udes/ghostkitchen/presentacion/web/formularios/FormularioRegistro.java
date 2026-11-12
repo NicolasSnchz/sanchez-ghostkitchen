@@ -18,7 +18,7 @@ public class FormularioRegistro {
     private String nombre;
 
     @NotNull(message = "{formulario.registro.alias}")
-    @Pattern(regexp = "\\s*[A-Za-z0-9_]{3,20}\\s*", message = "{formulario.registro.alias}")
+    @Pattern(regexp = "\\s*\\w{3,20}\\s*", message = "{formulario.registro.alias}")
     private String alias;
 
     @NotBlank(message = "{formulario.registro.correo}")

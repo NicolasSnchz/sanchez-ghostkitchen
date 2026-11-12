@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @DiscriminatorValue("CAZADOR")
 public class Cazador extends Usuario {
 
-    private static final Pattern FORMATO_ALIAS = Pattern.compile("[A-Za-z0-9_]{3,20}");
+    private static final Pattern FORMATO_ALIAS = Pattern.compile("\\w{3,20}");
 
     @Column(unique = true, length = 20)
     private String alias;

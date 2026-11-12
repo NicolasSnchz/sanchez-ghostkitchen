@@ -4,7 +4,7 @@ import co.edu.udes.ghostkitchen.dominio.modelo.Rareza;
 import java.time.LocalTime;
 
 /**
- * Todo lo que las reglas de puntos necesitan saber sobre una caza. Al recibirlo
+ * Lo que las reglas de puntos necesitan saber sobre una caza. Al recibirlo
  * ya resuelto, las calculadoras no consultan la base de datos ni el reloj.
  *
  * @param rareza            rareza de la cocina cazada

@@ -96,7 +96,7 @@ class DatosDemoIT {
         }
         Map<String, Long> cazasPorDia = cazas.stream().collect(Collectors.groupingBy(
                 caza -> caza.getCazador().getAlias() + caza.getFechaHora().toLocalDate(), Collectors.counting()));
-        assertThat(cazasPorDia.values()).allMatch(total -> total <= Descubrimiento.MAXIMO_CAZAS_POR_DIA);
+        assertThat(cazasPorDia.values()).isNotEmpty().allMatch(total -> total <= Descubrimiento.MAXIMO_CAZAS_POR_DIA);
 
         cargador.run(null);
         assertThat(descubrimientos.count()).isEqualTo(36);
@@ -134,8 +134,7 @@ class DatosDemoIT {
     void ranking_coincideConLosPuntosDeCadaPanel() {
         List<PosicionRanking> posiciones = ranking.clasificacion(50);
 
-        assertThat(posiciones).hasSize(6);
-        assertThat(posiciones).allSatisfy(posicion ->
+        assertThat(posiciones).hasSize(6).allSatisfy(posicion ->
                 assertThat(posicion.puntos()).isEqualTo(progreso.puntosDe(posicion.cazadorId())));
     }
 }

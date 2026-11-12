@@ -63,7 +63,8 @@ class RegistroCazaTest {
         pizzeria.actualizar(cocina().rareza(Rareza.RARA).horario(LocalTime.of(6, 0), LocalTime.of(14, 0)));
         CalculadoraPuntos dummy = mock(CalculadoraPuntos.class);
 
-        assertThatThrownBy(() -> registro(dummy).descubrir(CAZADOR, COCINA))
+        RegistroCaza servicio = registro(dummy);
+        assertThatThrownBy(() -> servicio.descubrir(CAZADOR, COCINA))
                 .isInstanceOf(ReglaNegocioException.class)
                 .hasMessage("caza.cocina-cerrada");
         verifyNoInteractions(dummy);
@@ -75,7 +76,8 @@ class RegistroCazaTest {
     void descubrir_conCincoCazasHoy_rechazaPorLimiteDiario() {
         when(descubrimientos.cazasDelDia(CAZADOR, AHORA.toLocalDate())).thenReturn(5L);
 
-        assertThatThrownBy(() -> registro(mock(CalculadoraPuntos.class)).descubrir(CAZADOR, COCINA))
+        RegistroCaza servicio = registro(mock(CalculadoraPuntos.class));
+        assertThatThrownBy(() -> servicio.descubrir(CAZADOR, COCINA))
                 .isInstanceOf(ReglaNegocioException.class)
                 .hasMessage("caza.limite-diario");
     }
@@ -83,14 +85,15 @@ class RegistroCazaTest {
     @Test
     void descubrir_cocinaRepetidaOInactivaOInexistente_rechaza() {
         when(descubrimientos.existsByCazadorIdAndCocinaId(CAZADOR, COCINA)).thenReturn(true);
-        assertThatThrownBy(() -> registro(mock(CalculadoraPuntos.class)).descubrir(CAZADOR, COCINA))
+        RegistroCaza servicio = registro(mock(CalculadoraPuntos.class));
+        assertThatThrownBy(() -> servicio.descubrir(CAZADOR, COCINA))
                 .hasMessage("caza.repetida");
 
         pizzeria.desactivar();
-        assertThatThrownBy(() -> registro(mock(CalculadoraPuntos.class)).descubrir(CAZADOR, COCINA))
+        assertThatThrownBy(() -> servicio.descubrir(CAZADOR, COCINA))
                 .hasMessage("caza.cocina-inactiva");
 
-        assertThatThrownBy(() -> registro(mock(CalculadoraPuntos.class)).descubrir(CAZADOR, 99L))
+        assertThatThrownBy(() -> servicio.descubrir(CAZADOR, 99L))
                 .isInstanceOf(RecursoNoEncontradoException.class);
     }
 

@@ -23,7 +23,8 @@ class DescubrimientoTest {
     void resenar_dosVeces_rechazaLaSegunda() {
         descubrimiento.resenar(5, "Muy buena", NOCHE.plusHours(1));
 
-        assertThatThrownBy(() -> descubrimiento.resenar(4, "Otra", NOCHE.plusHours(2)))
+        LocalDateTime despues = NOCHE.plusHours(2);
+        assertThatThrownBy(() -> descubrimiento.resenar(4, "Otra", despues))
                 .isInstanceOf(ReglaNegocioException.class)
                 .extracting(error -> ((ReglaNegocioException) error).getCodigo())
                 .isEqualTo("resena.duplicada");

@@ -22,6 +22,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class CuentaControlador {
 
+    private static final String VISTA_REGISTRO = "cuenta/registro";
+
     /** Errores de negocio del registro que corresponden a un campo concreto del formulario. */
     private static final Map<String, String> CAMPO_POR_ERROR = Map.of(
             "cuenta.correo-en-uso", "correo",
@@ -47,14 +49,14 @@ public class CuentaControlador {
             return "redirect:/";
         }
         modelo.addAttribute("formulario", new FormularioRegistro());
-        return "cuenta/registro";
+        return VISTA_REGISTRO;
     }
 
     @PostMapping("/registro")
     public String registrar(@Valid @ModelAttribute("formulario") FormularioRegistro formulario,
                             BindingResult errores, RedirectAttributes flash) {
         if (errores.hasErrors()) {
-            return "cuenta/registro";
+            return VISTA_REGISTRO;
         }
         try {
             cuentas.registrarCazador(formulario.aCuenta());
@@ -64,7 +66,7 @@ public class CuentaControlador {
                 throw conflicto;
             }
             errores.rejectValue(campo, "error." + conflicto.getCodigo());
-            return "cuenta/registro";
+            return VISTA_REGISTRO;
         }
         flash.addFlashAttribute("correoRegistrado", formulario.getCorreo().strip());
         return "redirect:/ingresar?registrado";

@@ -17,6 +17,8 @@ import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWrite
 @Configuration
 public class ConfiguracionSeguridad {
 
+    private static final String INGRESAR = "/ingresar";
+
     static final String POLITICA_DE_CONTENIDO = String.join("; ",
             "default-src 'self'",
             "img-src 'self' data: https://tile.openstreetmap.org",
@@ -40,7 +42,7 @@ public class ConfiguracionSeguridad {
                 .authorizeHttpRequests(acceso -> acceso
                         .requestMatchers("/css/**", "/js/**", "/img/**", "/fuentes/**", "/webjars/**",
                                 "/favicon.svg", "/error", "/error/**").permitAll()
-                        .requestMatchers("/ingresar", "/registro").permitAll()
+                        .requestMatchers(INGRESAR, "/registro").permitAll()
                         .requestMatchers(HttpMethod.GET, "/", "/explorar", "/cocinas/*", "/retos", "/ranking",
                                 "/api/v1/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -48,8 +50,8 @@ public class ConfiguracionSeguridad {
                                 "/retos/*/unirse").hasRole("CAZADOR")
                         .anyRequest().authenticated())
                 .formLogin(ingreso -> ingreso
-                        .loginPage("/ingresar")
-                        .loginProcessingUrl("/ingresar")
+                        .loginPage(INGRESAR)
+                        .loginProcessingUrl(INGRESAR)
                         .usernameParameter("correo")
                         .passwordParameter("clave")
                         .successHandler(new RedireccionPorRol())

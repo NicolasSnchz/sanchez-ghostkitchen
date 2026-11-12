@@ -89,8 +89,8 @@ class RepositoriosIT {
     void unaCocinaNoSePuedeCazarDosVecesPorElMismoCazador() {
         descubrimientos.saveAndFlush(Descubrimiento.registrar(humoAzul, pizzeria, AHORA, 150));
 
-        assertThatThrownBy(() -> descubrimientos.saveAndFlush(
-                Descubrimiento.registrar(humoAzul, pizzeria, AHORA.plusMinutes(5), 100)))
+        Descubrimiento repetida = Descubrimiento.registrar(humoAzul, pizzeria, AHORA.plusMinutes(5), 100);
+        assertThatThrownBy(() -> descubrimientos.saveAndFlush(repetida))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 

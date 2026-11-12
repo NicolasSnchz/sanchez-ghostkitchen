@@ -105,7 +105,8 @@ class HistorialAccionesTest {
         when(acciones.findFirstByCazadorIdAndDeshechaFalseOrderByFechaHoraDescIdDesc(CAZADOR))
                 .thenReturn(Optional.of(ultima));
 
-        assertThatThrownBy(() -> historialEn(AHORA).deshacerUltima(CAZADOR))
+        HistorialAcciones historial = historialEn(AHORA);
+        assertThatThrownBy(() -> historial.deshacerUltima(CAZADOR))
                 .isInstanceOf(ReglaNegocioException.class)
                 .hasMessage("accion.fuera-de-ventana");
         verifyNoInteractions(fabrica);
